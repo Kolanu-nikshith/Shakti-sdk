@@ -31,10 +31,20 @@
 #include "log.h"
 #include "uart.h"
 
+#define DELAY1 100
+#define DELAY2 50
+
+
 #define DELAY_VALUE 900
-#define PRESCALER_COUNT 0x1F
-#define SCLK_COUNT 0x91
+#if 1
+#define PRESCALER_COUNT 24
+#define SCLK_COUNT 9
+#else
+#define PRESCALER_COUNT 8
+#define SCLK_COUNT 6
+#endif
 #define I2C i2c_instance[1]
+#define RD_DATA_CNT 14
 
 #define MPU6050_SLAVE_ADDRESS 0xD0
 #define MPU_6050_OUTPUT_BEGIN 0x3B
@@ -45,6 +55,8 @@
 #define DEV_IDENTITY_DATA_REG 0X75
 #define MPU6050_REG_PWR_MGMT 0X6B
 #define MPU6050_RESET         0x80
+#define MPU6050_ACC_SENS_2G         0x00
+#define MPU6050_ACC_SENS_4G         0x08
 #define MPU6050_ACC_SENS_8G         0x10
 #define MPU6050_REG_GYRO_CONFIG      0x1B // Gyroscope Configuration
 #define MPU6050_REG_ACCEL_CONFIG     0x1C // Accelerometer Configuration
@@ -52,7 +64,7 @@
 
 #define PI 3.141592654
 
-char readbuf[20];
+char readbuf[RD_DATA_CNT];
 int AccX,AccY,AccZ;
 int accAngleX, accAngleY, GyroAngleX, GyroAngleY, GyroAngleZ;
 int roll, pitch, yaw;
@@ -62,18 +74,7 @@ int GyroX, GyroY, GyroZ;
 int c = 0;
 int i=0;
 
-#if 1
-/** @fn int read_mpu6050_registers(i2c_struct * i2c_instance, unsigned int reg_offset, unsigned int *readTemp, unsigned char length, unsigned long delay)
- * @brief Reads the ADC value from PCF8591
- * @details Reads 4 ADC values from PCF8591 over I2C interface
- * @param i2c_struct*
- * @param reg_offset
- * @param *readTemp
- * @param length
- * @param delay
- * @return read status (zero on success)
- */
-int read_mpu6050_register(i2c_struct * i2c_instance, unsigned int reg_offset, unsigned char *readTemp, unsigned char length, unsigned long delay)
+int read_mpu6050_register(i2c_struct * i2c_instance, unsigned int reg_offset, unsigned char *read_data, unsigned char length, unsigned long delay)
 {
 	unsigned char read_buf[4] = {'\0'};
 	int i = 0, j = 0,  k = 0, status=0;
@@ -83,27 +84,21 @@ int read_mpu6050_register(i2c_struct * i2c_instance, unsigned int reg_offset, un
 	i2c_send_slave_address(i2c_instance, MPU6050_SLAVE_ADDRESS, I2C_WRITE, 800);
 //Writes the pointer to address that needs to be read
 	i2c_write_data(i2c_instance, reg_offset, delay);
-//Stops the I2C transaction to start reading the temperature value.
-	i2c_instance->control = I2C_STOP;
-//	i2c_instance->control = I2C_REPSTART;
-
+//Restarts the I2C transaction to start reading the temperature value.
+	i2c_instance->control = I2C_REPSTART;
+	delay_loop(DELAY1, DELAY2);
 //Writes the slave address for read
-	i2c_send_slave_address(i2c_instance, MPU6050_SLAVE_ADDRESS, I2C_READ, 800);
-
+	i2c_write_data(i2c_instance, MPU6050_SLAVE_ADDRESS | I2C_READ, delay);
 /* Make a dummy read as per spec of the I2C controller */
 	i2c_instance->control = I2C_NACK;
 	i2c_read_data(i2c_instance, &temp, delay);
-	printf("\n Reading the data");
+//	printf("\n Reading the data");
 
-//Reads the MSB Byte of temperature [D9 - D1]
-//	i2c_read_data(i2c_instance, &temp, delay);
 	i2c_read_data_nack(i2c_instance, &temp, delay);
-	printf("\n Reading the data from reg");
-
-	*readTemp = temp;
-	printf("\n Sending stop request");
+	*read_data = temp;
+//	delay_loop(DELAY1, DELAY2);
 	i2c_instance->control = I2C_STOP;
-
+	delay_loop(DELAY1, DELAY2);
 	return 0;
 }
 
@@ -117,22 +112,24 @@ int read_mpu6050_register(i2c_struct * i2c_instance, unsigned int reg_offset, un
  * @param delay
  * @return read status (zero on success)
  */
-int read_mpu6050_registers(i2c_struct * i2c_instance, unsigned int reg_offset, unsigned int *readTemp, unsigned char length, unsigned long delay)
+int read_mpu6050_registers(i2c_struct * i2c_instance, unsigned int reg_offset, unsigned char *readTemp, unsigned char length, unsigned long delay)
 {
-	unsigned char read_buf[4] = {'\0'};
+//	unsigned char read_buf[4] = {'\0'};
 	int i = 0, j = 0,  k = 0, status=0;
 	unsigned char temp = 0;
 
 //Writes the slave address for write
-	i2c_send_slave_address(i2c_instance, MPU6050_SLAVE_ADDRESS, I2C_WRITE, 800);
+	i2c_send_slave_address(i2c_instance, MPU6050_SLAVE_ADDRESS, I2C_WRITE, delay);
 //Writes the pointer to address that needs to be read
 	i2c_write_data(i2c_instance, reg_offset, delay);
+//	delay_loop(DELAY1, DELAY2);
 //Stops the I2C transaction to start reading the temperature value.
-//	i2c_instance->control = I2C_STOP;
 	i2c_instance->control = I2C_REPSTART;
+	delay_loop(DELAY1, DELAY2);
 
 //Writes the slave address for read
-	i2c_send_slave_address(i2c_instance, MPU6050_SLAVE_ADDRESS, I2C_READ, 800);
+	i2c_write_data(i2c_instance, MPU6050_SLAVE_ADDRESS + I2C_READ, delay);
+//	i2c_send_slave_address(i2c_instance, MPU6050_SLAVE_ADDRESS, I2C_READ, delay);
 
 /* Make a dummy read as per spec of the I2C controller */
 	i2c_read_data(i2c_instance, &temp, delay);
@@ -140,18 +137,59 @@ int read_mpu6050_registers(i2c_struct * i2c_instance, unsigned int reg_offset, u
 //Reads the MSB Byte of temperature [D9 - D1]
 	for(i = 0; i < length; i++)
 	{
-		i2c_read_data(i2c_instance, &temp, delay);
+		if(i == (length - 1) )
+		{
+			log_debug("\nSending nack");
+			i2c_instance->control = I2C_NACK;
+//			i2c_read_data_nack(i2c_instance, &temp, delay);
+			i2c_read_data(i2c_instance, &temp, delay);
+			break;
+			}
+		else
+		{
+			i2c_read_data(i2c_instance, &temp, delay);
+		}
+		log_debug("\n read data[%x]: %x", i, temp);
 		*readTemp = temp;
-
-		if(i == (length - 2))
-		i2c_instance->control = I2C_NACK;
 		*readTemp++;
 	}
 	
+	log_debug("\n Sending Stop condition");
 	i2c_instance->control = I2C_STOP;
 	return 0;
 }
-#endif
+
+
+
+
+/** @fn int write_pcf8591_registers(i2c_struct * i2c_instance, unsigned int reg_offset, unsigned int *write_value, unsigned char length, unsigned long delay)
+ * @brief WRites into PCF8591 Register
+ * @details WRites the passed value into passed PCF8591 Register (address) over I2C interface.
+ * @param i2c_struct*
+ * @param reg_offset
+ * @param write_value
+ * @param length
+ * @param delay
+ * @return Write status (Zero on success)
+ */
+int write_mpu6050_register(i2c_struct * i2c_instance, unsigned int reg_offset, unsigned int *write_value, unsigned long delay)
+{
+	i2c_instance->control = I2C_IDLE;
+	delay_loop(DELAY1, DELAY2);
+	i2c_send_slave_address(i2c_instance, MPU6050_SLAVE_ADDRESS, I2C_WRITE, delay);
+//	delay_loop(DELAY1, DELAY2);
+	i2c_write_data(i2c_instance, reg_offset, delay);
+//	delay_loop(DELAY1, DELAY2);
+	log_debug("\n write value: %x", *write_value);
+	i2c_write_data(i2c_instance,  ( *write_value & 0xff), delay);
+	//Stops the I2C transaction to start reading the temperature value.
+//	delay_loop(DELAY1, DELAY2);
+	i2c_instance->control = I2C_STOP;
+	delay_loop(DELAY1, DELAY2);
+
+}
+
+
 
 /** @fn int write_pcf8591_registers(i2c_struct * i2c_instance, unsigned int reg_offset, unsigned int *write_value, unsigned char length, unsigned long delay)
  * @brief WRites into PCF8591 Register
@@ -170,7 +208,7 @@ int write_mpu6050_registers(i2c_struct * i2c_instance, unsigned int reg_offset, 
 	
 	i2c_send_slave_address(i2c_instance, MPU6050_SLAVE_ADDRESS, I2C_WRITE, delay);
 	i2c_write_data(i2c_instance, reg_offset, delay);
-	delay_loop(200,200);
+	delay_loop(DELAY1, DELAY2);
 	
 	if(1 == length)
 	{
@@ -187,6 +225,7 @@ int write_mpu6050_registers(i2c_struct * i2c_instance, unsigned int reg_offset, 
 
 //Stops the I2C transaction to start reading the temperature value.
 	i2c_instance->control = I2C_STOP;
+	delay_loop(DELAY1, DELAY2);
 	return 0;
 }
 
@@ -196,21 +235,13 @@ int write_mpu6050_registers(i2c_struct * i2c_instance, unsigned int reg_offset, 
 void measuring_value(unsigned long delay)
 {
 	// read accelerometer data
-#if 0
-	I2cSendSlaveAddress(MPU6050_SLAVE_ADDRESS, I2C_WRITE, delay);//selecting slave to be read
-	I2cWriteData(MPU_6050_OUTPUT_BEGIN, delay);//selecting register to be read
-	I2cSendSlaveAddress(MPU6050_SLAVE_ADDRESS, I2C_READ, delay);
-	i2c_dataread(readbuf,14,1, delay);//to read the output values
-	printf("helloworld inside measuring value\n");
-#else
-	read_mpu6050_registers(I2C, MPU_6050_OUTPUT_BEGIN, readbuf, 14, delay);
+	read_mpu6050_registers(I2C, MPU_6050_OUTPUT_BEGIN, readbuf, RD_DATA_CNT, delay);
 	printf("\n Read Buf: { ");
-	for(i = 0; i < 14; i++)
+	for(i = 0; i < RD_DATA_CNT; i++)
 	{
-		printf(" %x, ", readbuf[i] );
+		log_info(" %x, ", readbuf[i] );
 		}
-	printf(" }\n" ); 
-#endif
+	log_info(" }\n" ); 
 /*	AccX = (readbuf[0]<<8 |readbuf[1]) / 4096; //16-bit X-axis data
 	AccY = (readbuf[2]<<8 |readbuf[3]) / 4096; //16-bit Y-axis data
 	AccZ = (readbuf[4]<<8 |readbuf[5]) / 4096; //16-bit Z-axis data
@@ -264,17 +295,8 @@ void calculate_imu_error(unsigned long delay)
 unsigned char CheckForDeviceId(unsigned long delay)
 {
 	unsigned char readBuf = 0xFF;
-#if 0
-	I2cSendSlaveAddress(MPU6050_SLAVE_ADDRESS, I2C_WRITE, delay);//selecting slave to be read
-	SendAddressToReadOrWrite(DEV_IDENTITY_DATA_REG);
-	i2c_stop();
-	I2cSendSlaveAddress(MPU6050_SLAVE_ADDRESS, I2C_READ, delay);//selecting slave to be read
-	i2c_byteread(&readBuf);
-//	i2c_stop();
-#else
 	read_mpu6050_register(I2C, DEV_IDENTITY_DATA_REG, &readBuf, 1, delay);
-#endif
-	printf("\n Read Buf Value: %x", readBuf);
+	log_debug("\n Read Buf Value: %x", readBuf);
 	return readBuf;
 }
 
@@ -282,9 +304,8 @@ int main()
 {
 	unsigned char i = 0;
 	int timeout;
-	unsigned int tempReadValue = 0;
-	unsigned long delay = 1000;
-	unsigned int write_buf[7] = {0x00}, read_buf[7] = {0x00};
+	unsigned long delay = 500;
+	unsigned int write_buf[7] = {0x00};
 	unsigned char length = 0;
 
 	log_debug("\tI2C: MPU6050 - ACC test\n");
@@ -300,64 +321,33 @@ int main()
 	else
 		log_info("\tIntilization Happened Fine\n");
 
-	printf("MPU6050 i2c Init completed\n");
-
-	if(DEV_IDENTITY == CheckForDeviceId(delay))
-	{
-		printf("Device ID Check Success");
-	}
-	else
-	{
-		printf("Could not verify Device identity");
-	}
-	delay_loop(1000,1000);   // we can use waitfor() function also (delay time to reset the device and initialisations proper)
-	//configuring power management register
-	printf("\n Reset MPU");
-	write_buf[0] = MPU6050_RESET;
-	write_mpu6050_registers(I2C, MPU6050_REG_PWR_MGMT, &write_buf[0], 1,  delay);
-
-	return 0;
-
-	//setting internal clock of MPU6050
-	write_buf[0] = 0x00;
-	write_mpu6050_registers(I2C, MPU6050_REG_PWR_MGMT, &write_buf[0],  1, delay);
+		if(DEV_IDENTITY == CheckForDeviceId(delay))
+		{
+			log_info("Device ID Check Success");
+		}
+		else
+		{
+			log_error("Could not verify Device identity");
+		}
+		write_buf[0] = 1;
+		write_mpu6050_register(I2C, MPU6050_REG_PWR_MGMT, &write_buf[0],  delay);
+		write_buf[0] = MPU6050_GYRO_SENS_500D;
+		write_mpu6050_register(I2C, MPU6050_REG_GYRO_CONFIG, &write_buf[0], delay);
+		write_buf[0] = 0x01;
+		write_mpu6050_register(I2C, 0x1B, &write_buf[0], delay);
+		write_buf[0] = 0x01;
+		write_mpu6050_register(I2C, 0x1C, &write_buf[0], delay);
+		write_buf[0] = 0x01;
+		write_mpu6050_register(I2C, 0x6B, &write_buf[0], delay);
 
 
-	printf("\n Configure Accelerometer");
-	// configuring accelerometer -set sensitivity scale factor +-8g
-	write_buf[0] = MPU6050_ACC_SENS_8G;
-	write_mpu6050_registers(I2C, MPU6050_REG_ACCEL_CONFIG, &write_buf[0],  1, delay);
-
-	printf("\n Configure Gyro");
-	// configuring gyroscope-set  sensitivity scale factor to +-500deg/sec
-	write_buf[0] = MPU6050_GYRO_SENS_500D;
-	write_mpu6050_registers(I2C, MPU6050_REG_GYRO_CONFIG, &write_buf[0], 1, delay);
-
-
-	printf("\n Configure Gyro sample rate");
-	// configuirng gyroscope output rate as 1khz
-	write_buf[0] = 0x01;
-	write_mpu6050_registers(I2C, MPU6050_DLPF_CFG, &write_buf[0],  1, delay);
-
-	printf("\n Configure sample divider");
-	// configuring sample divider to 99(i.e sample rate= gyroscope output rate /(1+sample divider))
-	write_buf[0] = 0x63;
-	write_mpu6050_registers(I2C, MPU6050_SMPL_DIV, &write_buf[0],  1, delay);//set sample rate to 10
-
-	printf("\n Entering While loop");
-
+	log_debug("\n Entering While loop");
 	while(1)
 	{
 		measuring_value(delay);
-/*
-		printf("AccErrorX: %d,AccErrMPU6050_SLAVE_ADDRESSorX");
-		printf("AccErrorY: %d,AccErrorY");
-		printf("GyroErrorX: %d,GyroErrorX");
-		printf("GyroErrorY: %d,GyroErrorY");
-		printf("GyroErrorZ %d,GyroErrorZ");
-*/
 		delay_loop(2000, 1000);
 	}
 
 	return 0;
 }
+

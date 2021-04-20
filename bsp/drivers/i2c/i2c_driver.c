@@ -349,7 +349,7 @@ int i2c_send_slave_address(i2c_struct * instance, unsigned char slaveAddress, un
 	//Send the start condition and slave address to slave
 #ifndef USE_SA_WRITE_I2C_INTERRUPT
 	instance->control = I2C_START; //Sending the slave address to the I2C slave
-	waitfor(90000);
+	waitfor(900);
 	//Wait for PIN to become low.
 	timeout = wait_till_txrx_operation_Completes(instance, &status);
 	if (timeout) {//Asking the controller to send a start signal to initiate the transaction
