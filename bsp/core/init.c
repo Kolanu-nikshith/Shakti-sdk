@@ -40,7 +40,7 @@ Disable Xip for Aardonyx
 #include "defines.h"
 #include "uart.h"
 
-static void init(void);
+extern void init(void);
 extern void trap_entry(void);
 
 #if 0
