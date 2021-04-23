@@ -81,6 +81,7 @@ uintptr_t handle_trap(uintptr_t mcause, uintptr_t epc)
 {
 	unsigned int ie_entry = 0;;
 	uint32_t shift_length = 0;
+	uintptr_t code=0;
 
 	log_trace("\nhandle_trap entered\n");
 
@@ -106,11 +107,11 @@ uintptr_t handle_trap(uintptr_t mcause, uintptr_t epc)
 
 	log_debug("sizeof(uintptr)  = %d \n",sizeof(uintptr_t));
 	shift_length = __riscv_xlen - 1;
-
+	code = mcause & (1 << (shift_length));
+	
 	 /* checking for type of trap */
-	if (mcause & (1 << (shift_length))){
-
-		ie_entry = extract_ie_code(mcause);
+	if (code){
+		ie_entry = (~code) & mcause;
 
 		log_info("\nInterrupt: mcause = %x, epc = %x\n", mcause, epc);
 

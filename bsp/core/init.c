@@ -40,10 +40,10 @@ Disable Xip for Aardonyx
 #include "defines.h"
 #include "uart.h"
 
-extern void init(void);
+static void init(void);
 extern void trap_entry(void);
-extern uart_struct *uart_instance[MAX_UART_COUNT];
 
+#if 0
 extern char _stack_end[];
 extern char _stack[];
 extern char _heap[];
@@ -59,9 +59,8 @@ char *heap_end=(char *)&_heap_end;
  * @details Explicitly 0x0 or 0xffffffff is written all the addresses in different "write" sections of memory
  * @warning takes long time. so the caller is diabled as of now
  */
-static void section_init(void)
+inline static void section_init(void)
 {
-#if 0
 	/*Enable below code only on need
 	 */
 	while(heap_start<=heap_end)
@@ -75,16 +74,16 @@ static void section_init(void)
 		*stack_end=0x0;
 		stack_end--;
 	}
+}
 #endif
 
-}
 
 /** @fn void trap_init()
  * @brief Initialize the trap/interrupt callback routines with user defined handler.
  * @details Assign default handler for trap / interrupt that does not have user defined
  *          callback routines"
  */
-static void trap_init(void)
+inline static void trap_init(void)
 {
 	log_trace("trap_init entered \n ");
 
@@ -144,7 +143,7 @@ static void trap_init(void)
 /** @fn void init(void)
  * @brief initialize the necessary variables for system start
  */
-void init(void)
+static void init(void)
 {
 //	section_init(); // uncomment on need basis
 	uart_init();

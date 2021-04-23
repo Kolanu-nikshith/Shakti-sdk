@@ -37,12 +37,20 @@ _start:
 la t0, trap_entry
 csrw mtvec, t0
 
+
 #disable interrupts
 li      t0, 0xb
 csrrc   zero, mstatus, t0 #disable global interrupt for all modes
 li      t0, 0x888
 csrrc   zero, mie, t0  # disable machine level interrupt
 
+
+/*
+Disabled, so as to work in QEMU
+Enable if needed
+*/
+
+#if 0
  #define PLICENABLE 0x0C002000
  li t6, PLICENABLE
  andi t3,t3,0
@@ -59,6 +67,7 @@ csrrc   zero, mie, t0  # disable machine level interrupt
  sb t3, 1(t6)
  sb t3, 2(t6)
  sb t3, 3(t6)
+#endif
 
 li  x1, 0
 li  x2, 0
