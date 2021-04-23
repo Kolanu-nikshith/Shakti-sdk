@@ -39,8 +39,15 @@
 #define PLIC_PRIORITY_OFFSET            0x0000UL
 #define PLIC_PENDING_OFFSET             0x1000UL
 #define PLIC_ENABLE_OFFSET              0x2000UL
+
+#ifndef RISCV_PLIC
 #define PLIC_THRESHOLD_OFFSET           0x10000UL
 #define PLIC_CLAIM_OFFSET               0x10010UL
+#else
+/*Only context 0 supported*/
+#define PLIC_THRESHOLD_OFFSET           0x200000UL
+#define PLIC_CLAIM_OFFSET               0x200004UL
+#endif
 
 /* The priority value for each int src can be found at addresses 4 bytes apart
    starting from base address + priority offset */
@@ -88,9 +95,6 @@ extern plic_fptr_t isr_table[PLIC_MAX_INTERRUPT_SRC];
 
 /* Function prototypes */
 
-void interrupt_complete(uint32_t interrupt_id);
-uint32_t interrupt_claim_request(void);
-void isr_default(uint32_t interrupt_id);
 void interrupt_enable(uint32_t interrupt_id);
 void mach_plic_handler(uintptr_t int_id, uintptr_t epc);
 void interrupt_disable(uint32_t interrupt_id);
