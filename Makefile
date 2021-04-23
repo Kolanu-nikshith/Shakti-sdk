@@ -142,6 +142,12 @@ upload:
 	@echo Build and upload $(PROGRAM) on $(TARGET) board
 	cd ./software/examples && $(MAKE) UPLOAD=$(UPLOAD) PROGRAM=$(PROGRAM) TARGET=$(TARGET)
 
+.PHONY: upload_project
+upload_project:
+	@echo Build and upload $(PROGRAM) on $(TARGET) board
+	cd ./software/projects && $(MAKE) UPLOAD=$(UPLOAD) PROGRAM=$(PROGRAM) TARGET=$(TARGET)
+
+
 .PHONY: erase
 erase:
 	@echo Erase on-board flash $(PROGRAM) on Arty board

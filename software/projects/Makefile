@@ -34,6 +34,7 @@ FLASH ?=
 XLEN ?=32
 filepath ?= 
 D ?= 
+OPENOCD ?= $(shell which openocd)
 
 GENLIB:=$(shell pwd)/../../software/projects/
 # Invoke all possible combinations of applns for different targets
@@ -154,6 +155,9 @@ else
 ifeq ($(PROGRAM),weatherstation_bmp280)
 filepath := ./weatherstation_bmp280
 else
+ifeq ($(PROGRAM),weatherstation)
+filepath := ./weatherstation
+else
 ifeq ($(PROGRAM),fingerprint)
 filepath := ./fingerprint
 else
@@ -171,25 +175,31 @@ endif
 endif
 endif
 endif
+endif
 
-upload: path do
+erase: check library 
+	@rm -r output
+	@mkdir output
+	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) -w $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf -I$(bspboard) -I$(bspinc)  -c ../../bsp/utils/uploader/spansion/erase.c -o ./gen_lib/erase.o 
+	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) -w $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf -I$(bspinc) -c $(bspdri)/spi/spi_spansion.c -o gen_lib/flash_driver.o  
+	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) -T  $(bspboard)/link.ld $(GENLIB)/gen_lib/libshakti$(XLEN).a gen_lib/flash_driver.o ./gen_lib/erase.o -o ./gen_lib/flasherase.shakti -static -nostartfiles 
+	
+upload: library do finish do1 path
 path:
 FILEPATH:='"$(GENLIB)$(filepath)"'
 
-do:
+do1:
 ifeq ($(UPLOAD),UPLOAD)
-	@echo $(FILEPATH)	
-	@elf2hex 4 8192 $(filepath)/output/$(PROGRAM).shakti 2147483648 > $(filepath)/output/code.mem
-	@echo -e $(BSP)
+	@elf2hex 4 32768 $(filepath)/output/$(PROGRAM).shakti 2147483648 > $(filepath)/output/code.mem
 	@gcc -g -w -D FILEPATH='"$(FILEPATH)"' $(UPLOADDIR)/elf_to_header.c -o $(filepath)/output/elf_to_header
 	@$(filepath)/output/elf_to_header
-	@riscv$(XLEN)-unknown-elf-gcc -w $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf $(FLAGS) -I$(bspinc) -I$(filepath)/output -c $(UPLOADER)/deploy.c -o $(filepath)/output/deploy.o -march=$(MARCH) -mabi=$(MABI) -lm -lgcc
-	@riscv$(XLEN)-unknown-elf-gcc -w $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf  -I$(bspinc) -c $(FLASHSPEC) -o $(filepath)/output/flash_driver.o -march=$(MARCH)  -lm -lgcc
-	@riscv$(XLEN)-unknown-elf-gcc -T $(bspboard)/link.ld $(filepath)/output/deploy.o $(filepath)/output/flash_driver.o $(GENLIB)/gen_lib/libshakti$(XLEN).a -o $(filepath)/output/deploy.shakti -static -nostartfiles -lm -lgcc
+	@riscv$(XLEN)-unknown-elf-gcc -w $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf $(FLAGS) -I$(bspboard) -I$(bspinc) -I$(filepath)/output -c $(UPLOADER)/deploy.c -o $(filepath)/output/deploy.o -march=$(MARCH) -mabi=$(MABI) -lm -lgcc
+	@riscv$(XLEN)-unknown-elf-gcc -w $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf -I$(bspinc) -c $(FLASHSPEC) -o $(filepath)/output/flash_driver.o -march=$(MARCH) -mabi=$(MABI) -lm -lgcc
+	@riscv$(XLEN)-unknown-elf-gcc -T $(bspboard)/link.ld $(filepath)/output/deploy.o $(filepath)/output/flash_driver.o $(GENLIB)/gen_lib/libshakti$(XLEN).a -o $(filepath)/output/deploy.shakti -static -nostartfiles -march=$(MARCH) -mabi=$(MABI) -lm -lgcc
 	@riscv$(XLEN)-unknown-elf-objdump -D $(filepath)/output/deploy.shakti > $(filepath)/output/deploy.dump
 	@echo -e "Upload elf to Flash"
-#@$(UPLOADDIR)/burnFlash.py ./gen)lib/deploy.shakti
-#	@sudo $(OCDPATH)/openocd -f $(INTERFACE).cfg -c "reset init"  -c "load_image $(filepath)/output/deploy.shakti;resume 0x80000000;shutdown"
+#	@$(UPLOADDIR)/burnFlash.py ./genlib/deploy.shakti
+#	@sudo $(OPENOCD) -f $(INTERFACE).cfg -c "reset init" -c "load_image $(filepath)/output/deploy.shakti; resume 0x80000000;shutdown"
 	@riscv$(XLEN)-unknown-elf-objcopy -O ihex $(filepath)/output/deploy.shakti $(filepath)/output/deploy.hex
 	@sudo $(OPENOCD) -f $(INTERFACE).cfg -c "reset init" -c "load_image $(filepath)/output/deploy.hex ;resume 0x80000000;shutdown"
 	@rm -rf ./gen_lib/*.o
