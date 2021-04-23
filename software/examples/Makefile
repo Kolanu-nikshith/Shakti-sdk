@@ -123,6 +123,7 @@ endif
 endif
 endif
 endif
+endif
 
 library:
 ifeq ($(CLEAR),)
