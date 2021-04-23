@@ -10,6 +10,7 @@ build:
     - make all TARGET=pinaka
     - make all TARGET=parashu
     - make all TARGET=vajra
+    - make all TARGET=sos
 
   tags:
     - sw-runner
