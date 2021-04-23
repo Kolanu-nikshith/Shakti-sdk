@@ -143,7 +143,7 @@ inline static void trap_init(void)
 /** @fn void init(void)
  * @brief initialize the necessary variables for system start
  */
-static void init(void)
+void init(void)
 {
 //	section_init(); // uncomment on need basis
 	uart_init();
