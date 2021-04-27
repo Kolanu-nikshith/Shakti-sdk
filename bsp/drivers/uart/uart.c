@@ -31,7 +31,7 @@
 #include "gpio.h"
 #include "utils.h"
 
-uart_struct *uart_instance[MAX_UART_COUNT];
+volatile uart_struct *uart_instance[MAX_UART_COUNT];
 
 #define RTS GPIO4
 //#define USE_INTERRUPT 

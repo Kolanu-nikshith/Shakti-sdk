@@ -85,7 +85,7 @@ typedef struct
 #define PARITY(x) ( (x & 3)  << 3 ) /*! 00 --- No parity; 01 -Odd Parity; 10 - Even Parity;  11 - Unused */
 #define UART_TX_RX_LEN(x)       ( (x & 0x1F) << 5) /*! Maximum length 32 bits */
 
-extern uart_struct *uart_instance[MAX_UART_COUNT];
+extern volatile uart_struct *uart_instance[MAX_UART_COUNT];
 extern unsigned char uart0_complete;
 extern unsigned char uart1_complete;
 extern unsigned char uart2_complete;

@@ -145,22 +145,25 @@ compile:
 	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf -I$(bspinc) -I$(bspboard) -I$(bspdri)/plic -c $(bspcore)/init.c -o ./gen_lib/init.o -lm -lgcc
 	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf -I$(bspinc) -I$(bspboard) -c $(bspdri)/plic/plic_driver.c -o ./gen_lib/plic_driver.o -lm -lgcc
 	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf -I$(bspinc) -I$(bspboard) -c $(bspdri)/clint/clint_driver.c -o ./gen_lib/clint_driver.o -lm -lgcc
-	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf -I$(bspinc) -I$(bspboard) -I$(bspinc)/ethernet -c $(bspdri)/ethernet/eth_driver.c -o ./gen_lib/eth_driver.o -lm -lgcc
+
 build:
-	@riscv$(XLEN)-unknown-elf-ar rcs ./gen_lib/libshakti$(XLEN).a ./gen_lib/start.o ./gen_lib/trap.o ./gen_lib/util.o ./gen_lib/traps.o ./gen_lib/log.o ./gen_lib/printf.shakti ./gen_lib/qspi_micron.o ./gen_lib/uart.o ./gen_lib/i2c_driver.o ./gen_lib/clint_driver.o ./gen_lib/plic_driver.o ./gen_lib/init.o  ./gen_lib/xadc_driver.o ./gen_lib/pwm_driver.o ./gen_lib/eth_driver.o
+	@riscv$(XLEN)-unknown-elf-ar rcs ./gen_lib/libshakti$(XLEN).a ./gen_lib/start.o ./gen_lib/trap.o ./gen_lib/util.o ./gen_lib/traps.o ./gen_lib/log.o ./gen_lib/printf.shakti ./gen_lib/qspi_micron.o ./gen_lib/uart.o ./gen_lib/i2c_driver.o ./gen_lib/clint_driver.o ./gen_lib/plic_driver.o ./gen_lib/init.o  ./gen_lib/xadc_driver.o ./gen_lib/pwm_driver.o
 	
 do:
 ifeq ($(PROGRAM),all)
+	cd ./gpiov2_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./pwmv2_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./gpio_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./pwm_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./spi_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./sspi_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./i2c_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./plic_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./uart_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./clint_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./malloc_test && $(MAKE) all TARGET=$(TARGET)
 	cd ./xadc_applns && $(MAKE) all TARGET=$(TARGET)
-	cd ./eth_test && $(MAKE) all TARGET=$(TARGET)
+	cd ./eth_applns && $(MAKE) all TARGET=$(TARGET)
 else
 ifeq ($(PROGRAM),loopback)
 filepath := uart_applns/loopback
@@ -313,16 +316,16 @@ ifeq ($(PROGRAM),default_mode)
 filepath := xadc_applns/default_mode
 else
 ifeq ($(PROGRAM),self_test)
-filepath := eth_test/self_test
+filepath := eth_applns/self_test
 else
 ifeq ($(PROGRAM),poll_eg)
-filepath := eth_test/poll_eg
+filepath := eth_applns/poll_eg
 else
 ifeq ($(PROGRAM),ping_req)
-filepath := eth_test/ping_req
+filepath := eth_applns/ping_req
 else
 ifeq ($(PROGRAM),ping_res)
-filepath := eth_test/ping_res
+filepath := eth_applns/ping_res
 else
 	@echo "Entry for $(PROGRAM) not present"
 endif
