@@ -1,0 +1,746 @@
+
+/***************************************************************************
+ * Project               	    : shakti devt board
+ * Name of the file	            : pwmv2.h
+ * Brief Description of file    : Header file for PWM V2 Driver.
+ * Name of Author    	        : Sathya Narayanan, Kotteeswaran
+ * Email ID                     : kottee.off@gmail.com
+
+ Copyright (C) 2021  IIT Madras. All rights reserved.
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+***************************************************************************/
+/**
+ * @file pwmv2.c
+ * @project shakti devt board
+ * @brief Driver source file for PWM V2 Driver.
+ */
+
+#include "pwmv2.h"
+#include "platform.h"
+#include "log.h"
+#include "defines.h"
+#include "stddef.h"
+#include "stdbool.h"
+
+#define PERIOD_REGISTER_MAX		0xFFFFFFFF 
+#define DUTY_REGISTER_MAX   	   	0xFFFFFFFF 
+#define CONTROL_REGISTER_MAX        	0x0000FFFF
+#define DEADBAND_DELAY_REGISTER_MAX 	0x0000FFFF
+
+volatile pwm_struct *pwm_instance[PWM_MAX_COUNT];
+
+uint16_t *pwm_cluster0_clock_register = PWM_BASE_ADDRESS;
+
+//volatile uint16_t *pwm_output_control_register = PWM_OUTPUT_CONTROL;
+volatile uint16_t *pwm_output_control_register = 0x10200;
+
+/** @fn  pwm_init
+ * @brief Function to initialize all pwm modules
+ * @details This function will be called to initialize all pwm modules
+ * @param[in] No input parameter
+ * @param[Out] No output parameter
+ */
+void pwm_init()
+{
+	pwm_instance[0]= PWM_BASE_ADDRESS + 0x4;
+	pwm_instance[1]= PWM_BASE_ADDRESS + 0x14;
+	pwm_instance[2]= PWM_BASE_ADDRESS + 0x24;
+	pwm_instance[3]= PWM_BASE_ADDRESS + 0x34;
+	pwm_instance[4]= PWM_BASE_ADDRESS + 0x44;
+	pwm_instance[5]= PWM_BASE_ADDRESS + 0x54;
+	pwm_instance[6]= PWM_BASE_ADDRESS + 0x64;
+	pwm_instance[7]= PWM_BASE_ADDRESS + 0x74;
+}
+
+/** @fn  set_pwm_period_register
+ * @brief Function to set the period register of the selected pwm module
+ * @details This function will be called to set the value of the period register for the selected module 
+ * @param[in] uint32_t (module_number- specifies the pwm module to be selected)
+              uint32_t (value - value to be set between 0x0000 to 0xffffffff.)
+ * @param[Out] uint32_t (returns 1 on success, 0 on failure.)
+ */
+int set_pwm_period_register(int module_number, uint32_t value)
+{
+	if (value > PERIOD_REGISTER_MAX) {
+		log_error("\nPeriod Register Value higher than max value (%x)", PERIOD_REGISTER_MAX);	
+		return 0;
+	}
+
+	pwm_instance[module_number]->period_register=value;
+
+	log_info("\n Period Register of module number %d set to %x", module_number, value);
+
+	return 1;
+}
+
+/** @fn  set_pwm_duty_register
+ * @brief Function to set the duty register of the selected pwm module
+ * @details This function will be called to set the value of the duty register for the selected module
+ * @param[in] uint32_t (module_number- specifies the pwm module to be selected)
+ *            uint32_t (value - value to be set between 0x0000 to 0xffffffff.)
+ * @param[Out] uint32_t (returns 1 on success, 0 on failure.)
+ */
+int set_pwm_duty_register(int module_number, uint32_t value)
+{
+
+	if (value > DUTY_REGISTER_MAX) {
+		log_error("\nDuty Register Value higher than max value (%x)", DUTY_REGISTER_MAX);
+		return 0;
+	}
+
+	pwm_instance[module_number]->duty_register=value;
+
+	log_info("\n Duty Register of module number %d set to %x", module_number, value);
+
+	return 1;
+}
+
+/** @fn  set_pwm_control_register
+ * @brief Function to set the control register of the selected pwm module
+ * @details This function will be called to set the value of the control register for the selected module
+ * @param[in] uint32_t (module_number- specifies the pwm smodule to be selected)
+ *            uint32_t (value - value to be set between 0x0000 to 0xffff.)
+ * @param[Out] uint32_t (returns 1 on success, 0 on failure.)
+ */
+int set_pwm_control_register(int module_number, uint32_t value)
+{
+
+
+	pwm_instance[module_number]->control_register=value;
+
+	log_info("\n Control Register of module number %d set to %x", module_number, value);
+
+	return 1;
+}
+
+/** @fn  set_pwm_deadband_delay_register
+ * @brief Function to set the deadband delay register of the selected pwm module
+ * @details This function will be called to set the value of the deadband_delay register for the selected module
+ * @param[in] uint32_t (module_number- specifies the pwm module to be selected)
+ *            uint32_t (value - value to be set between 0x0000 to 0xff.)
+ * @param[Out] uint32_t (returns 1 on success, 0 on failure.)
+ */
+int set_pwm_deadband_delay_register(int module_number, uint32_t value)
+{
+
+	pwm_instance[module_number]->deadband_delay_register=value;
+
+	log_info("\n DeadBand Delay Register of module number %d set to %x", module_number, value);
+
+	return 1;
+}
+
+/** @fn pwm_clear_registers
+ * @brief Function to clear all registers in a specific pwm module
+ * @details This function will be called to clear all registers in a specific pwm module
+ * @param[in] uint32_t (module_number- specifies the pwm module to be selected)
+ * @param[Out] No output parameter
+ */
+void pwm_clear_registers(int module_number)
+{
+	set_pwm_period_register(module_number, 0);
+	set_pwm_duty_register(module_number, 0);
+	set_pwm_control_register(module_number, 0);
+	set_pwm_deadband_delay_register(module_number,0);
+	log_info("\n All registers of module number %d cleared", module_number);
+}
+
+
+/** @fn pwm_disable_complementary_outputs
+ * @brief Function to disable complementary outputs of all pwms.		
+ * @details This function will disable complementary outputs of all pwm modules
+ * @param[in] None
+ * @param[Out] None
+ */
+void pwm_disable_complementary_outputs()
+{
+	*pwm_output_control_register = 0;
+}
+
+
+
+/** @fn pwm_configure_complementary_outputs
+ * @brief Function to configure complementary outputs of a specific pwm module		
+ * @details This function will configure complementary outputs of a specific pwm module
+ * @param[in] uint32_t (module_number-  the pwm module to be selected)
+ * @param[Out] uint32_t (returns 1 on success, 0 on failure.)
+ */
+int pwm_configure_complementary_outputs(int module_number)
+{
+	int value = 0;
+
+	if( module_number < 2 )
+		value |= 0x1;
+
+	else if( module_number < 4 )
+		value |= 0x4;
+
+	else if( module_number < 6 )
+		value |= 0x10;
+
+	else if( module_number < 8 )
+		value |= 0x40;
+
+	else if( module_number < 10 )
+		value |= 0x100;
+
+	else if( module_number < 12 )
+		value |= 0x400;
+
+	else if( module_number < 14 )
+		value |= 0x1000;
+
+	else if( module_number < 16 )
+		value |= 0x4000;	
+
+	else
+	{
+		log_error("Invalid Module Number to complementary outputs");
+		return 0;
+	}
+	printf("\n Before: value: %x; op control reg: %x", value, *pwm_output_control_register);
+	*pwm_output_control_register |= value;
+	printf("\n After:  value: %x; op control reg: %x", value, *pwm_output_control_register);
+	return 1;
+}
+
+/** @fn  configure_control_register_mode
+ * @brief Function to set value of control register based on parameteres
+ * @details This function will set value of control register based on parameters
+ * @param[in]  bool          (update                      - specifies if the module is to be updated)
+ *           interrupt_mode  (interrupt_mode              - it specifes the mode of the interrupt)
+ *           bool            (change_output_polarity      - it specifies if the output polarity should be changed) 
+ *           bool            (enable_complementary_output - it specifies whether complementary outputs are to be enabled)
+ * @param[Out] uint32_t (returns value to be set in the control register.)
+ */
+int configure_control_register(bool update, pwm_interrupt_modes interrupt_mode, bool change_output_polarity, bool enable_complementary_output)
+{
+	int value = 0x0;
+
+	if(update==1)
+	{
+		value |=PWM_UPDATE_ENABLE;
+	}
+
+	if(interrupt_mode==0 || interrupt_mode==3 || interrupt_mode==5 || interrupt_mode==6)
+	{
+		value |= PWM_RISE_INTERRUPT_ENABLE;
+	}
+
+	if(interrupt_mode==1 || interrupt_mode==3 || interrupt_mode==4 || interrupt_mode==6)
+	{
+		value |= PWM_FALL_INTERRUPT_ENABLE;
+	}
+
+	if(interrupt_mode==2 || interrupt_mode==4 || interrupt_mode==5 || interrupt_mode==6)
+	{
+		value |= PWM_HALFPERIOD_INTERRUPT_ENABLE;
+	}
+
+	if(change_output_polarity)
+	{
+		value |= PWM_OUTPUT_POLARITY;
+	}
+
+	if(enable_complementary_output)
+	{
+		value |= PWM_COMP_OUTPUT_ENABLE;
+	}
+	return value;
+}
+
+/** @fn  pwm_set_duty_cycle
+* @brief Function to set the duty cycle value of a specific pwm module 
+ * @details This function will set the duty cycles value of a specific pwm module
+ * @param[in]uint32_t(module_number-  the pwm module to be selected )
+ *           uint32_t(duty - value of duty cycles to be used to decide how many period cycles the pwm signal is set to 1.
+ * @param[Out] No output parameter
+ */
+void pwm_set_duty_cycle(int module_number, uint32_t duty)
+{
+	if (set_pwm_duty_register(module_number, duty) == 0) {
+		log_error("\n Error in setting duty register");
+	}
+}
+
+/** @fn pwm_set_periodic_cycle
+ * @brief Function to set the period cycles value of a specific pwm module
+ * @details This function will set the period cycles value of a specific pwm module
+ * @param[in] uint32_t (module_number-  the pwm module to be selected)
+ *            uint32_t (clock_divisor-  value of period cycles which is used to further divide the frequency into fixed period cycles.)
+ * @param[Out] No output parameter
+ */
+void pwm_set_periodic_cycle(int module_number, uint32_t period)
+{
+	if(set_pwm_period_register(module_number, period) == 0) {
+		log_error("\n Error in setting period register");
+	}
+}
+
+/** @fn pwm_set_prescalar_value
+ * @brief Function to set the prescalar value of a specific pwm cluster		
+ * @details This function will set the prescalar value of a specific pwm cluster
+ * @param[in] uint32_t (cluster_number-  the pwm cluster to be selected)
+ *            uint32_t (prescalar_value-  value of prescalar values which is used to divide the clock frequency.)
+ * @param[Out] No output parameter
+ */
+void pwm_set_prescalar_value(int cluster_number, uint16_t prescalar_value)
+{
+	if(!cluster_number)
+	{
+		*pwm_cluster0_clock_register = (prescalar_value << 1);
+	}
+	else
+	{
+		*pwm_cluster1_clock_register = (prescalar_value << 1);
+	}
+}
+
+/** @fn pwm_reset_all
+ * @brief Function to reset all pwm modules
+ * @details This function will be called to reset all pwm modules
+ * @param[in] No input parameter
+ * @param[Out] No output parameter
+ */
+void pwm_reset_all()
+{
+	int i = PWM_MAX_COUNT  - 1 ;
+	for(;i>0;i--)
+	{
+		pwm_clear_registers(i);
+	}
+	log_info("\n All registers cleared");
+	pwm_set_prescalar_value(0, 0x0);
+	pwm_set_prescalar_value(1, 0x0);
+	pwm_configure_complementary_outputs(16);
+}
+
+/** @fn  pwm_configure
+ * @brief Function to configure the pwm module with all the values required like module_number, period, duty, interrupt_mode, deadband_delay, change_output_polarity, enable_complementary_output
+ * @details This function configure the pwm module
+ * @param[in] uint32_t (module_number - the pwm module to be selected)
+ *           uint32_t(period - value of periodic cycle to be used. the signal resets after every count of the periodic cycle)
+ *           uint32_t(duty - value of duty cycle. It specifies how many cycles the signal is active out of the periodic cycle )
+ *           pwm_interrupt_modes(interrupt_mode - value of interrupt mode. It specifies the interrupt mode to be used)
+ *           uint32_t(deadband_delay - value of deadband_delay. It specifies the deadband_delay to be used.)
+ *           bool (change_output_polarity - value of change_output_polarity. It specifies if output polarity is to be changed.)
+ *           bool (enable_complementary_output - value of enable_complementary_output. It specifies if complementary outputs is to be enabled.) 
+ * @param[Out] No output parameter
+ */
+void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode, uint32_t deadband_delay, bool change_output_polarity, bool enable_complementary_output)
+{
+	pwm_set_duty_cycle(module_number, duty);
+	pwm_set_periodic_cycle(module_number, period);
+	set_pwm_deadband_delay_register(module_number, deadband_delay);
+
+	int control = configure_control_register( false, interrupt_mode, change_output_polarity, enable_complementary_output);
+
+	if(enable_complementary_output)
+	{
+		pwm_configure_complementary_outputs(module_number);
+	}
+
+	set_pwm_control_register(module_number, control);
+
+	log_info("PWM %d succesfully configured with %x",module_number, pwm_instance[module_number]->control_register);
+}
+
+/** @fn pwm_start
+ * @brief Function to start a specific pwm module
+ * @details This function will start the specific pwm module
+ * @param[in] uint32_t (module_number-  the pwm module to be selected)
+ * @param[Out] No output parameter
+ */
+void pwm_start(int module_number)
+{
+	uint16_t value= 0x0;
+	value = pwm_instance[module_number]->control_register ;
+
+	value |= (PWM_UPDATE_ENABLE | PWM_ENABLE | PWM_START);
+
+	pwm_instance[module_number]->control_register = value;
+}
+
+/** @fn  pwm_update
+ * @brief Function to update the pwm module with all the values required like module_number, period, duty, interrupt_mode, deadband_delay, change_output_polarity, enable_complementary_output during the 		  next cycle
+ * @details This function udate the pwm module
+ * @param[in] uint32_t (module_number - the pwm module to be selected)
+ *           uint32_t(period - value of periodic cycle to be used. the signal resets after every count of the periodic cycle)
+ *           uint32_t(duty - value of duty cycle. It specifies how many cycles the signal is active out of the periodic cycle )
+ *           bool (rise_interrupt - value of rise_interrupt. It specifies if rise_interrupt is to be used.)
+ *           pwm_interrupt_modes(interrupt_mode - value of interrupt mode. It specifies the interrupt mode to be used)
+ *           bool (enable_complementary_output - value of enable_complementary_output. It specifies if complementary outputs is to be enabled.) 
+ * @param[Out] No output parameter
+ */
+void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity, bool enable_complementary_output)
+{
+	pwm_set_duty_cycle(module_number, duty);
+	pwm_set_periodic_cycle(module_number, period);
+
+	int control = configure_control_register( true, interrupt_mode , change_output_polarity, enable_complementary_output);
+
+	if(enable_complementary_output)
+	{
+			pwm_configure_complementary_outputs(module_number);
+	}
+
+	
+	set_pwm_control_register(module_number, control);
+	
+    log_info("PWM %d succesfully updated",module_number);
+}
+
+/** @fn  pwm_stop
+ * @brief Function to stop a specific pwm module
+ * @details This function will stop a specific pwm module
+ * @param[in] uint32_t (module_number-  the pwm module to be selected)
+ * @param[out] No output parameter 
+ */
+void pwm_stop(int module_number)
+{
+	int value = 0xfff8;  //it will set pwm_enable,pwm_start,pwm_output_enable  to zero
+	pwm_instance[module_number]->control_register &= value;
+	log_info("\n PWM module number %d has been stopped", module_number);
+}
+
+void pwm_show_register_values(int module_number)
+{	
+	log_info("\n MODULE SPECIFIC REGISTERS");
+	log_info("\n PWM %d Period Register %d" ,module_number, pwm_instance[module_number]->period_register);
+	log_info("\n PWM %d Control Register %d" ,module_number, pwm_instance[module_number]->control_register);
+	log_info("\n PWM %d Duty Register %d" ,module_number, pwm_instance[module_number]->duty_register);
+	log_info("\n PWM %d DeadBand Delay Register %d" ,module_number, pwm_instance[module_number]->deadband_delay_register);
+}
+	
+/** @fn  pwm_isr_handler0
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler0(){ 
+	
+	if(pwm_instance[0]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[0]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[0]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 0 Interrupt");
+}
+
+/** @fn  pwm_isr_handler1
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler1(){ 
+ 
+	if(pwm_instance[1]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[1]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[1]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 1 Interrupt");
+ 
+}
+
+/** @fn  pwm_isr_handler2
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler2(){ 
+	
+	if(pwm_instance[2]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[2]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[2]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 2 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler3
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler3(){ 
+	
+	if(pwm_instance[3]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[3]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[3]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 3 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler4
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler4(){ 
+	
+	if(pwm_instance[4]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[4]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[4]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 4 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler5
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler5(){ 
+	
+	if(pwm_instance[5]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[5]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[5]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 5 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler6
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler6(){ 
+	
+	if(pwm_instance[6]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[6]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[6]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 6 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler7
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler7(){ 
+	
+	if(pwm_instance[7]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[7]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[7]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 7 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler8
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler8(){ 
+	
+	if(pwm_instance[8]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[8]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[8]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 8 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler9
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler9(){ 
+	
+	if(pwm_instance[9]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[9]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[9]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 9 Interrupt");
+}
+
+/** @fn  pwm_isr_handler10
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler10(){ 
+	
+	if(pwm_instance[10]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[10]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[10]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 10 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler11
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler11(){ 
+	
+	if(pwm_instance[11]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[11]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[11]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 11 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler12
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler12(){ 
+	
+	if(pwm_instance[12]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[12]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[12]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 12 Interrupt"); 
+}
+
+/** @fn  pwm_isr_handler13
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler13(){ 
+	
+	if(pwm_instance[13]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[13]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[13]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 13 Interrupt");
+}
+
+/** @fn  pwm_isr_handler14
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler14(){ 
+	
+	if(pwm_instance[14]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[14]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[14]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 14 Interrupt");
+}
+
+/** @fn  pwm_isr_handler15
+ * @brief Function to handle isr
+ * @details This function will print logs which specify what interrupt has been triggered- rise,fall,halfperiod
+ * @param[in] No Input parameter
+ * @param[out] No output parameter 
+ */
+void pwm_isr_handler15(){ 
+	
+	if(pwm_instance[15]->control_register & PWM_RISE_INTERRUPT)
+		log_info("Rising Edge Interrupt Triggered");
+		
+	if(pwm_instance[15]->control_register & PWM_FALL_INTERRUPT)
+		log_info("Falling Edge Interrupt Triggered");
+
+	if(pwm_instance[15]->control_register & PWM_HALFPERIOD_INTERRUPT)
+		log_info("HalfPeriod Interrupt Triggered");		
+
+	log_debug("\n PWM 15 Interrupt");
+}
