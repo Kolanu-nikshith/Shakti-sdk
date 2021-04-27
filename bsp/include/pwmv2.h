@@ -38,11 +38,11 @@
 
 typedef struct
 {
-	uint16_t control_register;    			/*! pwm control register 16 bits*/
+	uint16_t control;    			/*! pwm control register 16 bits*/
 	uint16_t reserved1;
-	uint32_t period_register;			/*! pwm period register 32 bits */
-	uint32_t duty_register;				/*! pwm duty cycle register 32 bits*/
-	uint16_t deadband_delay_register;		/*! pwm deadband delay register 16 bits */
+	uint32_t period;			/*! pwm period register 32 bits */
+	uint32_t duty;				/*! pwm duty cycle register 32 bits*/
+	uint16_t deadband_delay;		/*! pwm deadband delay register 16 bits */
 	uint16_t reserved2;
 }pwm_struct;
 
@@ -65,7 +65,6 @@ typedef enum
 #define PWM_OUTPUT_ENABLE  			0x00000004
 #define PWM_OUTPUT_POLARITY     		0x00000008
 #define PWM_COUNTER_RESET   			0x00000010
-#define PWM_COMP_OUTPUT_ENABLE           	0x00000020
 #define PWM_HALFPERIOD_INTERRUPT_ENABLE         0x00000040
 #define PWM_FALL_INTERRUPT_ENABLE       	0x00000080
 #define PWM_RISE_INTERRUPT_ENABLE       	0x00000100
@@ -77,36 +76,24 @@ typedef enum
 
 //function prototype
 void pwm_init();
-void pwm_clear_registers(int module_number);
+void pwm_clears(int module_number);
 void pwm_set_duty_cycle(int module_number, uint32_t duty);
 void pwm_set_periodic_cycle(int module_number, uint32_t period);
 void pwm_stop(int module_number);
-int set_pwm_deadband_delay_register(int module_number, uint32_t value);
-int configure_control_register(bool update, pwm_interrupt_modes interrupt_mode, bool change_output_polarity, bool enable_complementary_output);
+int set_pwm_deadband_delay(int module_number, uint32_t value);
+int configure_control(bool update, pwm_interrupt_modes interrupt_mode, bool change_output_polarity, bool enable_complementary_output);
 void pwm_set_prescalar_value(int cluster_number, uint16_t prescalar_value);
-int pwm_configure_complementary_outputs(int module_number);
 void pwm_reset_all();
 void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , uint32_t deadband_delay, bool change_output_polarity, bool enable_complementary_output); 
 void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity, bool enable_complementary_output);
-void show_register_values(int module_number);
-int set_pwm_period_register(int module_number, uint32_t value);
-int set_pwm_duty_register(int module_number, uint32_t value);
-int set_pwm_control_register(int module_number, uint32_t value);
+void show_values(int module_number);
+int set_pwm_period(int module_number, uint32_t value);
+int set_pwm_duty(int module_number, uint32_t value);
+int set_pwm_control(int module_number, uint32_t value);
 void pwm_isr_handler0();
 void pwm_isr_handler1();
 void pwm_isr_handler2();
 void pwm_isr_handler3();
 void pwm_isr_handler4();
 void pwm_isr_handler5();
-void pwm_isr_handler6();
-void pwm_isr_handler7();
-void pwm_isr_handler8();
-void pwm_isr_handler9();
-void pwm_isr_handler10();
-void pwm_isr_handler11();
-void pwm_isr_handler12();
-void pwm_isr_handler13();
-void pwm_isr_handler14();
-void pwm_isr_handler15();
-
 #endif
