@@ -38,6 +38,8 @@
 
 typedef struct
 {
+	uint16_t clock;    			/*! pwm clock register 16 bits*/
+	uint16_t reserved0;
 	uint16_t control;    			/*! pwm control register 16 bits*/
 	uint16_t reserved1;
 	uint32_t period;			/*! pwm period register 32 bits */
@@ -58,7 +60,6 @@ typedef enum
 	no_interrupt				//Disable interrupts
 }pwm_interrupt_modes;
 
-
 // Control Register Individual Bits 
 #define PWM_ENABLE 	 			0x00000001
 #define PWM_START          			0x00000002
@@ -73,23 +74,20 @@ typedef enum
 #define PWM_RISE_INTERRUPT      		0x00000800
 #define PWM_UPDATE_ENABLE			0x00001000
 
-
 //function prototype
 void pwm_init();
-void pwm_clears(int module_number);
+void pwm_clear(int module_number);
 void pwm_set_duty_cycle(int module_number, uint32_t duty);
 void pwm_set_periodic_cycle(int module_number, uint32_t period);
+int pwm_set_control(int module_number, uint32_t value);
 void pwm_stop(int module_number);
-int set_pwm_deadband_delay(int module_number, uint32_t value);
-int configure_control(bool update, pwm_interrupt_modes interrupt_mode, bool change_output_polarity, bool enable_complementary_output);
+int pwm_set_deadband_delay(int module_number, uint32_t value);
+int configure_control(bool update, pwm_interrupt_modes interrupt_mode, bool change_output_polarity);
 void pwm_set_prescalar_value(int cluster_number, uint16_t prescalar_value);
 void pwm_reset_all();
-void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , uint32_t deadband_delay, bool change_output_polarity, bool enable_complementary_output); 
-void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity, bool enable_complementary_output);
+void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , uint32_t deadband_delay, bool change_output_polarity); 
+void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity);
 void show_values(int module_number);
-int set_pwm_period(int module_number, uint32_t value);
-int set_pwm_duty(int module_number, uint32_t value);
-int set_pwm_control(int module_number, uint32_t value);
 void pwm_isr_handler0();
 void pwm_isr_handler1();
 void pwm_isr_handler2();

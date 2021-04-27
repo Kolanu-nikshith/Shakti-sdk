@@ -41,7 +41,6 @@
 
 volatile pwm_struct *pwm_instance[PWM_MAX_COUNT];
 
-uint16_t *pwm_clock = PWM_BASE_ADDRESS;
 
 //volatile uint16_t *pwm_output_control = PWM_OUTPUT_CONTROL;
 volatile uint16_t *pwm_output_control = 0x10200;
@@ -54,7 +53,7 @@ volatile uint16_t *pwm_output_control = 0x10200;
  */
 void pwm_init()
 {
-	pwm_instance[0]= PWM_BASE_ADDRESS + 0x0;
+	pwm_instance[0]= PWM_BASE_ADDRESS;
 	pwm_instance[1]= PWM_BASE_ADDRESS + 0x100;
 	pwm_instance[2]= PWM_BASE_ADDRESS + 0x200;
 	pwm_instance[3]= PWM_BASE_ADDRESS + 0x300;
@@ -94,13 +93,13 @@ int pwm_set_deadband_delay(int module_number, uint32_t value)
 	return 1;
 }
 
-/** @fn pwm_clears
+/** @fn pwm_clear
  * @brief Function to clear all registers in a specific pwm module
  * @details This function will be called to clear all registers in a specific pwm module
  * @param[in] uint32_t (module_number- specifies the pwm module to be selected)
  * @param[Out] No output parameter
  */
-void pwm_clears(int module_number)
+void pwm_clear(int module_number)
 {
 	pwm_instance[module_number]->control=0;
 	pwm_instance[module_number]->duty=0;
@@ -115,10 +114,9 @@ void pwm_clears(int module_number)
  * @param[in]  bool          (update                      - specifies if the module is to be updated)
  *           interrupt_mode  (interrupt_mode              - it specifes the mode of the interrupt)
  *           bool            (change_output_polarity      - it specifies if the output polarity should be changed) 
- *           bool            (enable_complementary_output - it specifies whether complementary outputs are to be enabled)
  * @param[Out] uint32_t (returns value to be set in the control register.)
  */
-inline int configure_control(bool update, pwm_interrupt_modes interrupt_mode, bool change_output_polarity, bool enable_complementary_output)
+inline int configure_control(bool update, pwm_interrupt_modes interrupt_mode, bool change_output_polarity)
 {
 	int value = 0x0;
 
@@ -147,10 +145,6 @@ inline int configure_control(bool update, pwm_interrupt_modes interrupt_mode, bo
 		value |= PWM_OUTPUT_POLARITY;
 	}
 
-	if(enable_complementary_output)
-	{
-		value |= PWM_COMP_OUTPUT_ENABLE;
-	}
 	return value;
 }
 
@@ -195,7 +189,7 @@ void pwm_set_periodic_cycle(int module_number, uint32_t period)
  */
 void pwm_set_prescalar_value(int cluster_number, uint16_t prescalar_value)
 {
-		*pwm_clock = (prescalar_value << 1);
+	pwm_instance[module_number]->clock = (prescalar_value << 1);
 }
 
 /** @fn pwm_reset_all
@@ -211,12 +205,13 @@ void pwm_reset_all()
 	{
 		pwm_clears(i);
 	}
+
+	pwm_instance[module_number]->clock=0;
 	log_debug("\n All registers cleared");
-	*pwm_clock = 0;
 }
 
 /** @fn  pwm_configure
- * @brief Function to configure the pwm module with all the values required like module_number, period, duty, interrupt_mode, deadband_delay, change_output_polarity, enable_complementary_output
+ * @brief Function to configure the pwm module with all the values required like module_number, period, duty, interrupt_mode, deadband_delay, change_output_polarity_
  * @details This function configure the pwm module
  * @param[in] uint32_t (module_number - the pwm module to be selected)
  *           uint32_t(period - value of periodic cycle to be used. the signal resets after every count of the periodic cycle)
@@ -224,7 +219,6 @@ void pwm_reset_all()
  *           pwm_interrupt_modes(interrupt_mode - value of interrupt mode. It specifies the interrupt mode to be used)
  *           uint32_t(deadband_delay - value of deadband_delay. It specifies the deadband_delay to be used.)
  *           bool (change_output_polarity - value of change_output_polarity. It specifies if output polarity is to be changed.)
- *           bool (enable_complementary_output - value of enable_complementary_output. It specifies if complementary outputs is to be enabled.) 
  * @param[Out] No output parameter
  */
 void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode, uint32_t deadband_delay, bool change_output_polarity)
@@ -234,11 +228,6 @@ void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interr
 	pwm_instance[module_number]->deadband_delay = deadband_delay;
 
 	int control = configure_control( false, interrupt_mode, change_output_polarity);
-
-	if(enable_complementary_output)
-	{
-		pwm_configure_complementary_outputs(module_number);
-	}
 
 	pwm_instance[module_number]->control=control;
 
@@ -262,14 +251,13 @@ void pwm_start(int module_number)
 }
 
 /** @fn  pwm_update
- * @brief Function to update the pwm module with all the values required like module_number, period, duty, interrupt_mode, deadband_delay, change_output_polarity, enable_complementary_output during the 		  next cycle
+ * @brief Function to update the pwm module with all the values required like module_number, period, duty, interrupt_mode, deadband_delay, change_output_polarity
  * @details This function udate the pwm module
  * @param[in] uint32_t (module_number - the pwm module to be selected)
  *           uint32_t(period - value of periodic cycle to be used. the signal resets after every count of the periodic cycle)
  *           uint32_t(duty - value of duty cycle. It specifies how many cycles the signal is active out of the periodic cycle )
  *           bool (rise_interrupt - value of rise_interrupt. It specifies if rise_interrupt is to be used.)
  *           pwm_interrupt_modes(interrupt_mode - value of interrupt mode. It specifies the interrupt mode to be used)
- *           bool (enable_complementary_output - value of enable_complementary_output. It specifies if complementary outputs is to be enabled.) 
  * @param[Out] No output parameter
  */
 void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity)
@@ -278,11 +266,6 @@ void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt
 	pwm_instance[module_number]->period=period;
 
 	int control = configure_control( true, interrupt_mode , change_output_polarity);
-
-	if(enable_complementary_output)
-	{
-			pwm_configure_complementary_outputs(module_number);
-	}
 
 	pwm_instance[module_number]->control = control;
 	
