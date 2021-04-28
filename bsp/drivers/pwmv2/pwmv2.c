@@ -27,23 +27,30 @@
  * @brief Driver source file for PWM V2 Driver.
  */
 
+#include <stdio.h>
 #include "pwmv2.h"
 #include "platform.h"
 #include "log.h"
-#include "defines.h"
-#include "stddef.h"
-#include "stdbool.h"
+
+
 
 #define PERIOD_REGISTER_MAX		0xFFFFFFFF 
 #define DUTY_REGISTER_MAX   	   	0xFFFFFFFF 
 #define CONTROL_REGISTER_MAX        	0x0000FFFF
 #define DEADBAND_DELAY_REGISTER_MAX 	0x0000FFFF
 
+#define PWM_MAX_COUNT 6
+
 volatile pwm_struct *pwm_instance[PWM_MAX_COUNT];
 
 
 //volatile uint16_t *pwm_output_control = PWM_OUTPUT_CONTROL;
-volatile uint16_t *pwm_output_control = 0x10200;
+volatile int *pwm_output_control = 0x10200;
+
+void check()
+{
+	printf("In PWMV2_driver");
+}
 
 /** @fn  pwm_init
  * @brief Function to initialize all pwm modules
@@ -68,7 +75,7 @@ void pwm_init()
  *            uint32_t (value - value to be set between 0x0000 to 0xffff.)
  * @param[Out] uint32_t (returns 1 on success, 0 on failure.)
  */
-int pwm_set_control(int module_number, uint32_t value)
+int pwm_set_control(int module_number, int value)
 {
 	pwm_instance[module_number]->control=value;
 
@@ -84,7 +91,7 @@ int pwm_set_control(int module_number, uint32_t value)
  *            uint32_t (value - value to be set between 0x0000 to 0xff.)
  * @param[Out] uint32_t (returns 1 on success, 0 on failure.)
  */
-int pwm_set_deadband_delay(int module_number, uint32_t value)
+int pwm_set_deadband_delay(int module_number, int value)
 {
 	pwm_instance[module_number]->deadband_delay=value;
 
@@ -155,11 +162,11 @@ inline int configure_control(bool update, pwm_interrupt_modes interrupt_mode, bo
  *           uint32_t(duty - value of duty cycles to be used to decide how many period cycles the pwm signal is set to 1.
  * @param[Out] No output parameter
  */
-void pwm_set_duty_cycle(int module_number, uint32_t duty)
+void pwm_set_duty_cycle(int module_number, int duty)
 {
-	pwm_instance[module_number]->duty=value;
+	pwm_instance[module_number]->duty=duty;
 
-	log_debug("\n Duty Register of module number %d set to %x", module_number, value);
+	log_debug("\n Duty Register of module number %d set to %x", module_number, duty);
 
 	return 1;
 }
@@ -171,11 +178,11 @@ void pwm_set_duty_cycle(int module_number, uint32_t duty)
  *            uint32_t (clock_divisor-  value of period cycles which is used to further divide the frequency into fixed period cycles.)
  * @param[Out] No output parameter
  */
-void pwm_set_periodic_cycle(int module_number, uint32_t period)
+void pwm_set_periodic_cycle(int module_number, int period)
 {
-	pwm_instance[module_number]->period=value;
+	pwm_instance[module_number]->period=period;
 
-	log_debug("\n Period Register of module number %d set to %x", module_number, value);
+	log_debug("\n Period Register of module number %d set to %x", module_number, period);
 
 	return 1;
 }
@@ -187,7 +194,7 @@ void pwm_set_periodic_cycle(int module_number, uint32_t period)
  *            uint32_t (prescalar_value-  value of prescalar values which is used to divide the clock frequency.)
  * @param[Out] No output parameter
  */
-void pwm_set_prescalar_value(int cluster_number, uint16_t prescalar_value)
+void pwm_set_prescalar_value(int module_number, int prescalar_value)
 {
 	pwm_instance[module_number]->clock = (prescalar_value << 1);
 }
@@ -198,12 +205,12 @@ void pwm_set_prescalar_value(int cluster_number, uint16_t prescalar_value)
  * @param[in] No input parameter
  * @param[Out] No output parameter
  */
-void pwm_reset_all()
+void pwm_reset_all(int module_number)
 {
 	int i = PWM_MAX_COUNT  - 1 ;
 	for(;i>0;i--)
 	{
-		pwm_clears(i);
+		pwm_clear(i);
 	}
 
 	pwm_instance[module_number]->clock=0;
@@ -221,7 +228,7 @@ void pwm_reset_all()
  *           bool (change_output_polarity - value of change_output_polarity. It specifies if output polarity is to be changed.)
  * @param[Out] No output parameter
  */
-void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode, uint32_t deadband_delay, bool change_output_polarity)
+void pwm_configure(int module_number, int period, int duty, pwm_interrupt_modes interrupt_mode, int deadband_delay, bool change_output_polarity)
 {
 	pwm_instance[module_number]->duty=duty;
 	pwm_instance[module_number]->period=period;
@@ -242,7 +249,7 @@ void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interr
  */
 void pwm_start(int module_number)
 {
-	uint16_t value= 0x0;
+	int value= 0x0;
 	value = pwm_instance[module_number]->control ;
 
 	value |= (PWM_UPDATE_ENABLE | PWM_ENABLE | PWM_START);
@@ -260,7 +267,7 @@ void pwm_start(int module_number)
  *           pwm_interrupt_modes(interrupt_mode - value of interrupt mode. It specifies the interrupt mode to be used)
  * @param[Out] No output parameter
  */
-void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity)
+void pwm_update(int module_number, int period, int duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity)
 {
 	pwm_instance[module_number]->duty=duty;
 	pwm_instance[module_number]->period=period;

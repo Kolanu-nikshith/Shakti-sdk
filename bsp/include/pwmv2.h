@@ -27,25 +27,19 @@
  * @project shakti devt board
  * @brief Header file for PWM Driver.
  */
-#ifndef PWM_H
-#define PWM_H
 
 #include<stdbool.h>
-#include "platform.h"
-#include "defines.h"
-#include "stddef.h"
-#include "stdint.h"
 
 typedef struct
 {
-	uint16_t clock;    			/*! pwm clock register 16 bits*/
-	uint16_t reserved0;
-	uint16_t control;    			/*! pwm control register 16 bits*/
-	uint16_t reserved1;
-	uint32_t period;			/*! pwm period register 32 bits */
-	uint32_t duty;				/*! pwm duty cycle register 32 bits*/
-	uint16_t deadband_delay;		/*! pwm deadband delay register 16 bits */
-	uint16_t reserved2;
+	int clock;    			/*! pwm clock register 16 bits*/
+	int reserved0;
+	int control;    			/*! pwm control register 16 bits*/
+	int reserved1;
+	int period;			/*! pwm period register 32 bits */
+	int duty;				/*! pwm duty cycle register 32 bits*/
+	int deadband_delay;		/*! pwm deadband delay register 16 bits */
+	int reserved2;
 }pwm_struct;
 
 typedef enum
@@ -75,18 +69,19 @@ typedef enum
 #define PWM_UPDATE_ENABLE			0x00001000
 
 //function prototype
+void check();
 void pwm_init();
 void pwm_clear(int module_number);
-void pwm_set_duty_cycle(int module_number, uint32_t duty);
-void pwm_set_periodic_cycle(int module_number, uint32_t period);
-int pwm_set_control(int module_number, uint32_t value);
+void pwm_set_duty_cycle(int module_number, int duty);
+void pwm_set_periodic_cycle(int module_number, int period);
+int pwm_set_control(int module_number, int value);
 void pwm_stop(int module_number);
-int pwm_set_deadband_delay(int module_number, uint32_t value);
+int pwm_set_deadband_delay(int module_number, int value);
 int configure_control(bool update, pwm_interrupt_modes interrupt_mode, bool change_output_polarity);
-void pwm_set_prescalar_value(int cluster_number, uint16_t prescalar_value);
+void pwm_set_prescalar_value(int cluster_number, int prescalar_value);
 void pwm_reset_all();
-void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , uint32_t deadband_delay, bool change_output_polarity); 
-void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity);
+void pwm_configure(int module_number, int period, int duty, pwm_interrupt_modes interrupt_mode , int deadband_delay, bool change_output_polarity); 
+void pwm_update(int module_number, int period, int duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity);
 void show_values(int module_number);
 void pwm_isr_handler0();
 void pwm_isr_handler1();
@@ -94,4 +89,4 @@ void pwm_isr_handler2();
 void pwm_isr_handler3();
 void pwm_isr_handler4();
 void pwm_isr_handler5();
-#endif
+

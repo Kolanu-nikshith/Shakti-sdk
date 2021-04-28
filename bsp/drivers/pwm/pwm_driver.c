@@ -35,6 +35,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define CLOCK_REGISTER_MAX      0x0000FFFF
 #define CONTROL_REGISTER_MAX    0x000000FF
 
+
+// void check()
+// {
+// 	printf("In pwm_driver");
+// }
+
 /** @fn int set_pwm_period_register(int module_number, int value)
  * @brief Function to set the period register of the selected pwm module
  * @details This function will be called to set the value of the period register for the selected module 
