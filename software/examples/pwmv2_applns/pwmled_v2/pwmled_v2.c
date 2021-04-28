@@ -27,8 +27,9 @@
 @detail it runs the led and causes it to blink at specified frequency using the pwm module
 */
 
-#include "pwm_driver.h"
+#include "pwmv2.h"
 #include "pinmux.h"
+#include <stdint.h>
 
 /** @fn int main()
  * @brief main function that runs the code

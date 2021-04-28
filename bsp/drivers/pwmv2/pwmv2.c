@@ -27,7 +27,8 @@
  * @brief Driver source file for PWM V2 Driver.
  */
 
-#include<stdio.h>
+#include <stdio.h>
+#include <stdint.h>
 #include "pwmv2.h"
 #include "platform.h"
 #include "log.h"
@@ -49,7 +50,7 @@ volatile uint16_t *pwm_output_control = 0x10200;
 
 void check()
 {
-	printf("HELLO");
+	printf("In pwmv2\n");
 }
 
 /** @fn  pwm_init
@@ -168,7 +169,7 @@ void pwm_set_duty_cycle(int module_number, uint32_t duty)
 
 	log_debug("\n Duty Register of module number %d set to %x", module_number, duty);
 
-	return 1;
+	// return 1;
 }
 
 /** @fn pwm_set_periodic_cycle
@@ -184,7 +185,7 @@ void pwm_set_periodic_cycle(int module_number, uint32_t period)
 
 	log_debug("\n Period Register of module number %d set to %x", module_number, period);
 
-	return 1;
+	// return 1;
 }
 
 /** @fn pwm_set_prescalar_value
