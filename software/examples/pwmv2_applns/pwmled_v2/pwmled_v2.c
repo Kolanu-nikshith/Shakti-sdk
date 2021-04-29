@@ -29,10 +29,16 @@
 
 #include "pwmv2.h"
 #include "pinmux.h"
+#include <stdio.h>
+
 
 
 #define PWM_0 0
-#define PWM_1 1
+#define PWM_1 1 
+#define PWM_2 2 
+#define PWM_3 3
+#define PWM_4 4 
+#define PWM_5 5 
 
 /** @fn int main()
  * @brief main function that runs the code
@@ -40,28 +46,63 @@
  */
 int main()
 {
-<<<<<<< HEAD
 	check_pwmv2();
 	pwm_init();
-/*	pwm_set_prescalar_value(PWM_0, 1000);
+	*pinmux_config_reg = 0x2aa80;
+#if 1
+	//Uncomment this for testing PWM 0
+	pwm_set_prescalar_value(PWM_0, 1000);
 	pwm_stop(PWM_0);
 	pwm_configure(PWM_0, 0xf0, 0x80, no_interrupt, 0x1, false);
-	*pinmux_config_reg = 0x80;
 	pwm_start(PWM_0);
 	pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
-	// pwm_stop(PWM_0);
-*/
-	pwm_set_prescalar_value(PWM_1, 1000);
+#endif
+#if 0
+	//Uncomment this for testing PWM 1
+	pwm_set_prescalar_value(PWM_1, 100);
+	pwm_clear(PWM_1);
 	pwm_stop(PWM_1);
 	pwm_configure(PWM_1, 0xf0, 0x80, no_interrupt, 0x1, false);
-	*pinmux_config_reg = 0x80;
 	pwm_start(PWM_1);
 	pwm_set_control(PWM_1, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_1);
-	pwm_stop(PWM_1);
 
-=======
->>>>>>> 9fa066d179b013f9270d90afc4a3e23edbb8c823
+
+	//Uncomment this for testing PWM 2
+	pwm_set_prescalar_value(PWM_2, 100);
+	pwm_clear(PWM_2);
+	pwm_stop(PWM_2);
+	pwm_configure(PWM_2, 0xf0, 0x80, no_interrupt, 0x1, false);
+	pwm_start(PWM_2);
+	pwm_set_control(PWM_2, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
+	pwm_show_values(PWM_2);
+
+	//Uncomment this for testing PWM 3
+	pwm_set_prescalar_value(PWM_3, 100);
+	pwm_clear(PWM_3);
+	pwm_stop(PWM_3);
+	pwm_configure(PWM_3, 0xf0, 0x80, no_interrupt, 0x1, false);
+	pwm_start(PWM_3);
+	pwm_set_control(PWM_3, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
+
+
+	//Uncomment this for testing PWM 4
+	pwm_set_prescalar_value(PWM_4, 100);
+	pwm_clear(PWM_4);
+	pwm_stop(PWM_4);
+	pwm_configure(PWM_4, 0xf0, 0x80, no_interrupt, 0x1, false);
+	pwm_start(PWM_4);
+	pwm_set_control(PWM_4, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
+
+
+	//Uncomment this for testing PWM 5
+	pwm_set_prescalar_value(PWM_5, 100);
+	pwm_clear(PWM_5);
+	pwm_stop(PWM_5);
+	pwm_configure(PWM_5, 0xf0, 0x80, no_interrupt, 0x1, false);
+	pwm_start(PWM_5);
+	pwm_set_control(PWM_5, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
+#endif
 	return 0;
 }
