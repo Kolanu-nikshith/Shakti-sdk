@@ -40,6 +40,7 @@
  */
 int main()
 {
+<<<<<<< HEAD
 	check_pwmv2();
 	pwm_init();
 /*	pwm_set_prescalar_value(PWM_0, 1000);
@@ -60,5 +61,7 @@ int main()
 	pwm_show_values(PWM_1);
 	pwm_stop(PWM_1);
 
+=======
+>>>>>>> 9fa066d179b013f9270d90afc4a3e23edbb8c823
 	return 0;
 }
