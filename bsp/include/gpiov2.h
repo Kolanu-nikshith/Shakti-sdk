@@ -51,7 +51,7 @@ typedef struct
 
 extern gpio_struct *gpiov2_instance;
 
-void check();
+void check_gpiov2();
 void gpiov2_init();
 long int gpiov2_read_word(int *addr);
 void gpiov2_write_word(int *addr, unsigned long val);

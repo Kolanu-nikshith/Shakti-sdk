@@ -6,14 +6,14 @@
  */
 
 #include "gpiov2.h"
-// #include "platform.h"
+#include "platform.h"
 
 
 gpio_struct *gpiov2_instance;
 
-void check()
+void check_gpiov2()
 {
-    printf("I am WORKING");
+    printf("\nHey!! I am form GPIO_V2\n");
 }
 
 /** @fn gpiov2_init()

@@ -28,14 +28,25 @@
 
 #include "platform.h"
 #include "utils.h" 
-#include "gpio.h" 
+#include "gpiov2.h" 
 
 /** @fn main
  * @brief Initiates writing to gpio pins by calling tglgpio
  */ 
 void main()
 {
-	// check();
-	
+	check_gpiov2();
+	printf("\n Starting Toggle GPIO tests \n");
+	gpiov2_init();
+	gpiov2_instance->direction = 0xffff;
+	while(1)
+	{
+		gpiov2_instance->set = 0xffff;
+		delay_loop(1000, 1000);
+		gpiov2_instance->set = 0;
+		gpiov2_instance->clear = 0xffff;
+		delay_loop(1000, 1000);
+		gpiov2_instance->clear = 0;
+	}
 }
 
