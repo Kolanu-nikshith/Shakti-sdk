@@ -189,7 +189,7 @@ else
 ifeq ($(PROGRAM),pwminterrupt)
 filepath := plic_applns/pwminterrupt
 else
-ifeq ($(PROGRAM),pwminterrupt)
+ifeq ($(PROGRAM),asm_int)
 filepath := plic_applns/asm_int
 else
 ifeq ($(PROGRAM),lm75)
