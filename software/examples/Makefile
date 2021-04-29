@@ -109,7 +109,7 @@ else
 ifeq ($(TARGET),sos)                         # c-class 100t rv64imacsu
 	@$(eval XLEN = 64)
 	@$(eval WIDTH = 8)
-	@$(eval FLAGS= -D vajra)
+	@$(eval FLAGS= -D SOS)
 	@$(eval MARCH=rv64imac)
 	@$(eval MABI=lp64)
 	@$(eval UPLOADER=$(UPLOADDIR)/spansion)
@@ -160,12 +160,6 @@ endif
 	
 do:
 ifeq ($(PROGRAM),all)
-	cd ./gpiov2_applns && $(MAKE) all TARGET=$(TARGET)
-	cd ./pwmv2_applns && $(MAKE) all TARGET=$(TARGET)
-	cd ./gpio_applns && $(MAKE) all TARGET=$(TARGET)
-	cd ./pwm_applns && $(MAKE) all TARGET=$(TARGET)
-	cd ./spi_applns && $(MAKE) all TARGET=$(TARGET)
-	cd ./sspi_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./i2c_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./plic_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./uart_applns && $(MAKE) all TARGET=$(TARGET)
@@ -173,6 +167,15 @@ ifeq ($(PROGRAM),all)
 	cd ./malloc_test && $(MAKE) all TARGET=$(TARGET)
 	cd ./xadc_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./eth_applns && $(MAKE) all TARGET=$(TARGET)
+ifeq ($(TARGET),sos)
+	cd ./gpiov2_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./pwmv2_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./sspi_applns && $(MAKE) all TARGET=$(TARGET)
+else
+	cd ./gpio_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./pwm_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./spi_applns && $(MAKE) all TARGET=$(TARGET)
+endif
 else
 ifeq ($(PROGRAM),loopback)
 filepath := uart_applns/loopback
