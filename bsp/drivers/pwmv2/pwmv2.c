@@ -50,7 +50,7 @@ volatile uint16_t *pwm_output_control = 0x10200;
 
 void check_pwmv2()
 {
-	printf("Hey I am from pwmv2\n");
+	printf("\tHey I am from pwmv2\n");
 }
 
 /** @fn  pwm_init
@@ -67,6 +67,8 @@ void pwm_init()
 	pwm_instance[3]= PWM_BASE_ADDRESS + 0x300;
 	pwm_instance[4]= PWM_BASE_ADDRESS + 0x400;
 	pwm_instance[5]= PWM_BASE_ADDRESS + 0x500;
+
+	log_info("Initilization Done\n");
 }
 
 /** @fn  pwm_set_control
@@ -195,7 +197,7 @@ void pwm_set_periodic_cycle(int module_number, uint32_t period)
  *            uint32_t (prescalar_value-  value of prescalar values which is used to divide the clock frequency.)
  * @param[Out] No output parameter
  */
-void pwm_set_prescalar_value(int module_number, uint16_t prescalar_value)
+void pwm_set_prescalar_value(uint32_t module_number, uint16_t prescalar_value)
 {
 	pwm_instance[module_number]->clock = (prescalar_value << 1);
 }
@@ -229,7 +231,7 @@ void pwm_reset_all(int module_number)
  *           bool (change_output_polarity - value of change_output_polarity. It specifies if output polarity is to be changed.)
  * @param[Out] No output parameter
  */
-void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode, uint32_t deadband_delay, bool change_output_polarity)
+void pwm_configure(uint32_t module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode, uint32_t deadband_delay, bool change_output_polarity)
 {
 	pwm_instance[module_number]->duty=duty;
 	pwm_instance[module_number]->period=period;
@@ -286,10 +288,11 @@ void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt
  * @param[in] uint32_t (module_number-  the pwm module to be selected)
  * @param[out] No output parameter 
  */
-void pwm_stop(int module_number)
+void pwm_stop(uint32_t module_number)
 {
 	int value = 0xfff8;  //it will set pwm_enable,pwm_start,pwm_output_enable  to zero
 	pwm_instance[module_number]->control &= value;
+	log_info("\n PWM module number %d has been stopped", module_number);
 	log_debug("\n PWM module number %d has been stopped", module_number);
 }
 

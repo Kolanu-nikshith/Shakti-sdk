@@ -32,6 +32,7 @@
 
 
 #define PWM_0 0
+#define PWM_1 1
 
 /** @fn int main()
  * @brief main function that runs the code
@@ -41,11 +42,23 @@ int main()
 {
 	check_pwmv2();
 	pwm_init();
+/*	pwm_set_prescalar_value(PWM_0, 1000);
 	pwm_stop(PWM_0);
-	// pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , uint32_t deadband_delay, bool change_output_polarity); 
 	pwm_configure(PWM_0, 0xf0, 0x80, no_interrupt, 0x1, false);
 	*pinmux_config_reg = 0x80;
 	pwm_start(PWM_0);
+	pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
+	// pwm_stop(PWM_0);
+*/
+	pwm_set_prescalar_value(PWM_1, 1000);
+	pwm_stop(PWM_1);
+	pwm_configure(PWM_1, 0xf0, 0x80, no_interrupt, 0x1, false);
+	*pinmux_config_reg = 0x80;
+	pwm_start(PWM_1);
+	pwm_set_control(PWM_1, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
+	pwm_show_values(PWM_1);
+	pwm_stop(PWM_1);
+
 	return 0;
 }
