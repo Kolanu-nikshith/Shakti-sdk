@@ -109,7 +109,7 @@ else
 ifeq ($(TARGET),sos)                         # c-class 100t rv64imacsu
 	@$(eval XLEN = 64)
 	@$(eval WIDTH = 8)
-	@$(eval FLAGS= -D vajra)
+	@$(eval FLAGS= -D SOS)
 	@$(eval MARCH=rv64imac)
 	@$(eval MABI=lp64)
 	@$(eval UPLOADER=$(UPLOADDIR)/spansion)
