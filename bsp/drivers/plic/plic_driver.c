@@ -168,10 +168,10 @@ static inline void isr_default(uint32_t interrupt_id)
 		   Assuming 6 pwm's are there
 		 */
 
-		if(pwm_check_continuous_mode((6-interrupt_id)) == 0)
-		{
-			set_pwm_control_register((6-interrupt_id),0x80);
-		}
+		// if(pwm_check_continuous_mode((6-interrupt_id)) == 0)
+		// {
+		// 	pwm_set_control((6-interrupt_id),0x80);
+		// }
 	}
 
 	log_info("interrupt [%d] serviced\n",interrupt_id);
