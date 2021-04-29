@@ -160,12 +160,15 @@ endif
 	
 do:
 ifeq ($(PROGRAM),all)
+ifeq ($(TARGET),sos)
 	cd ./gpiov2_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./pwmv2_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./sspi_applns && $(MAKE) all TARGET=$(TARGET)
+else
 	cd ./gpio_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./pwm_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./spi_applns && $(MAKE) all TARGET=$(TARGET)
-	cd ./sspi_applns && $(MAKE) all TARGET=$(TARGET)
+#endif
 	cd ./i2c_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./plic_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./uart_applns && $(MAKE) all TARGET=$(TARGET)
