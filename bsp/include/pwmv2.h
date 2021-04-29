@@ -71,7 +71,7 @@ typedef enum
 #define PWM_UPDATE_ENABLE			0x00001000
 
 //function prototype
-void check();
+void check_pwmv2();
 void pwm_init();
 void pwm_clear(int module_number);
 void pwm_set_duty_cycle(int module_number, uint32_t duty);

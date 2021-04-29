@@ -39,6 +39,7 @@ int main()
 	/**we need to set the period, duty cycle and the clock divisor in order
 	 *to set it to the frequency required. Base clock is 50MHz
 	 **/
+	// void pwm_configure(int module_number,int clock_divisor, int period, int duty, bool external_clock)
 	pwm_configure(PWM_0, 0xf000, 0xf0, 0x80, false);
     *pinmux_config_reg = 0x80;
 		

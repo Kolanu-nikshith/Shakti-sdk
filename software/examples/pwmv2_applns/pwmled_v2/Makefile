@@ -29,11 +29,11 @@ XLEN  ?=32
 FLAGS ?=
 
 all: create_dir
-	make pwmled_v2.riscv
+	make $(PROGRAM).riscv
 
-pwmled_v2.riscv: create_dir
-	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) -w $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf $(FLAGS) -I$(bspinc) -I$(bspboard) -c ./pwmled_v2.c -o ./output/pwmled_v2.o
-	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) -T  $(bspboard)/link.ld $(GENLIB)/gen_lib/libshakti$(XLEN).a ./output/pwmled_v2.o -o ./output/$(PROGRAM).shakti -static -nostartfiles
+$(PROGRAM).riscv: create_dir
+	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) -w $(DC) -mcmodel=medany -static -std=gnu99 -fno-builtin-printf $(FLAGS) -I$(bspinc) -I$(bspboard) -c ./$(PROGRAM).c -o ./output/$(PROGRAM).o
+	@riscv$(XLEN)-unknown-elf-gcc -march=$(MARCH) -mabi=$(MABI) -T  $(bspboard)/link.ld ./output/$(PROGRAM).o  $(GENLIB)/gen_lib/libshakti$(XLEN).a -o ./output/$(PROGRAM).shakti -static -nostartfiles
 	@riscv$(XLEN)-unknown-elf-objdump -D ./output/$(PROGRAM).shakti > ./output/$(PROGRAM).dump
 
 create_dir:

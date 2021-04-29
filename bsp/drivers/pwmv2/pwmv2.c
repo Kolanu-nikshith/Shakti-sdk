@@ -48,9 +48,9 @@ volatile pwm_struct *pwm_instance[PWM_MAX_COUNT];
 //volatile uint16_t *pwm_output_control = PWM_OUTPUT_CONTROL;
 volatile uint16_t *pwm_output_control = 0x10200;
 
-void check()
+void check_pwmv2()
 {
-	printf("In pwmv2\n");
+	printf("Hey I am from pwmv2\n");
 }
 
 /** @fn  pwm_init
