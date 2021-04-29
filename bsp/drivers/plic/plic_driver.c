@@ -170,7 +170,7 @@ static inline void isr_default(uint32_t interrupt_id)
 #ifndef SOS
 		if(pwm_check_continuous_mode((6-interrupt_id)) == 0)
 		{
-			pwm_set_control((6-interrupt_id),0x80);
+			set_pwm_control_register((6-interrupt_id),0x80);
 		}
 #endif
 	}
