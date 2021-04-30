@@ -348,7 +348,23 @@ else
 ifeq ($(PROGRAM),pwmled_v2)
 filepath := pwmv2_applns/pwmled_v2
 else
+ifeq ($(PROGRAM),pwminterrupt_v2)
+filepath := pwmv2_applns/pwminterrupt_v2
+else
+ifeq ($(PROGRAM),pwmcreset_v2)
+filepath := pwmv2_applns/pwmcreset_v2
+else
+ifeq ($(PROGRAM),pwmdeadband_v2)
+filepath := pwmv2_applns/pwmdeadband_v2
+else
+ifeq ($(PROGRAM),pwmmotor_v2)
+filepath := pwmv2_applns/pwmmotor_v2
+else
 	@echo "Entry for $(PROGRAM) not present"
+endif
+endif
+endif
+endif
 endif
 endif
 endif

@@ -39,6 +39,10 @@ void main()
 	printf("\n Starting Toggle GPIO tests \n");
 	gpiov2_init();
 	gpiov2_instance->direction = 0xffff;
+
+#if 0	
+		/* Toggling All the pins */
+
 	while(1)
 	{
 		gpiov2_instance->set = 0xffff;
@@ -48,5 +52,19 @@ void main()
 		delay_loop(1000, 1000);
 		gpiov2_instance->clear = 0;
 	}
+
+#endif
+
+#if 1
+		/* Toggling by giving specific pins number*/
+
+	while (1)
+	{
+		gpiov2_instance->toggle = 1;
+		delay_loop(1000, 1000);
+		gpiov2_instance->toggle = 0;
+	}
+#endif
+
 }
 

@@ -61,7 +61,7 @@ void pwm_init()
 	for (int i = 0; i < PWM_MAX_COUNT; i++)
 	{
 		pwm_instance[i]= (pwm_struct *) (PWM_BASE_ADDRESS + (i * PWM_MODULE_OFFSET) );
-		printf("\n pwm_instance[%x]: %x",  i, pwm_instance[i]);
+		// printf("\n pwm_instance[%x]: %x",  i, pwm_instance[i]);
 	}
 
 /*	pwm_instance[0]= (pwm_struct *) PWM_BASE_ADDRESS;

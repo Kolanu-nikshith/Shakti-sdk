@@ -30,7 +30,7 @@
  Once the pwm timer overflows, an interrupt is generated and it is handled
  by the isr.
 */
-#ifndef SOS
+
 #include "gpio.h"
 #include "uart.h"
 #include "traps.h"
@@ -152,9 +152,3 @@ void main(void){
 	}
 }
 
-#else
-void main(){
-
-	while(1);
-}
-#endif
