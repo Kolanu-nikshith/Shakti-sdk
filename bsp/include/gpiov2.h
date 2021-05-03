@@ -1,6 +1,6 @@
 
 /**
- * @file  gpio.h
+ * @file  gpiov2.h
  * @project shakti devt board
  * @brief  header file for gpio driver
  */

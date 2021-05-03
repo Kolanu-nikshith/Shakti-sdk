@@ -41,6 +41,8 @@
 void main(void){
 
 	uint64_t value = ( CLOCK_FREQUENCY / CLINT_DIVISOR );
+	// uint64_t value = 20833000/16;
+	// uint64_t value = 50000000/256;
 
 	asm volatile("li      t0, 0x80\t\n"
 		     "csrrs   zero, mie, t0\t\n"

@@ -345,6 +345,9 @@ else
 ifeq ($(PROGRAM),readgpio)
 filepath := gpiov2_applns/readgpio
 else
+ifeq ($(PROGRAM),gpiointerrupt)
+filepath := gpiov2_applns/gpiointerrupt
+else
 ifeq ($(PROGRAM),pwmled_v2)
 filepath := pwmv2_applns/pwmled_v2
 else
@@ -361,6 +364,7 @@ ifeq ($(PROGRAM),pwmmotor_v2)
 filepath := pwmv2_applns/pwmmotor_v2
 else
 	@echo "Entry for $(PROGRAM) not present"
+endif
 endif
 endif
 endif

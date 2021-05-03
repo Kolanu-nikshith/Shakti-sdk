@@ -40,8 +40,8 @@ void main()
 	gpiov2_init();
 	gpiov2_instance->direction = 0xffff;
 
-#if 0	
-		/* Toggling All the pins */
+#if 1	
+		/* Toggling All the pins using clear  */
 
 	while(1)
 	{
@@ -55,7 +55,7 @@ void main()
 
 #endif
 
-#if 1
+#if 0
 		/* Toggling by giving specific pins number*/
 
 	while (1)
@@ -63,6 +63,7 @@ void main()
 		gpiov2_instance->toggle = 1;
 		delay_loop(1000, 1000);
 		gpiov2_instance->toggle = 0;
+		delay_loop(1000, 1000);
 	}
 #endif
 
