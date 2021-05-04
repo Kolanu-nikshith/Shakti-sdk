@@ -33,8 +33,6 @@
 
 typedef struct
 {
-	uint16_t clock;    			/*! pwm clock register 16 bits*/
-	uint16_t reserved0;
 	uint16_t control;    			/*! pwm control register 16 bits*/
 	uint16_t reserved1;
 	uint32_t period;			/*! pwm period register 32 bits */

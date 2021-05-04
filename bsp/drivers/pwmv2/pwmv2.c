@@ -34,16 +34,15 @@
 #include "log.h"
 
 
-
 #define PERIOD_REGISTER_MAX		0xFFFFFFFF 
 #define DUTY_REGISTER_MAX   	   	0xFFFFFFFF 
 #define CONTROL_REGISTER_MAX        	0x0000FFFF
 #define DEADBAND_DELAY_REGISTER_MAX 	0x0000FFFF
 
-#define PWM_MAX_COUNT 6
 
 pwm_struct *pwm_instance[PWM_MAX_COUNT];
 
+uint16_t *pwm_clock_register = PWM_BASE_ADDRESS;
 
 void check_pwmv2()
 {
@@ -60,18 +59,10 @@ void pwm_init()
 {
 	for (int i = 0; i < PWM_MAX_COUNT; i++)
 	{
-		pwm_instance[i]= (pwm_struct *) (PWM_BASE_ADDRESS + (i * PWM_MODULE_OFFSET) );
+		pwm_instance[i]= (pwm_struct *) (PWM_BASE0_ADDRESS + (i * PWM_MODULE_OFFSET) );
 		// printf("\n pwm_instance[%x]: %x",  i, pwm_instance[i]);
 	}
-
-/*	pwm_instance[0]= (pwm_struct *) PWM_BASE_ADDRESS;
-	pwm_instance[1]= (pwm_struct *) PWM_BASE_ADDRESS + 0x100;
-	pwm_instance[2]= (pwm_struct *) PWM_BASE_ADDRESS + 0x200;
-	pwm_instance[3]= (pwm_struct *) PWM_BASE_ADDRESS + 0x300;
-	pwm_instance[4]= (pwm_struct *) PWM_BASE_ADDRESS + 0x400;
-	pwm_instance[5]= (pwm_struct *) PWM_BASE_ADDRESS + 0x500;
-*/
-	log_info("Initilization Done\n");
+	log_info("\n Initilization Done");
 }
 
 /** @fn  pwm_set_control
@@ -204,7 +195,7 @@ void pwm_set_periodic_cycle(int module_number, uint32_t period)
  */
 void pwm_set_prescalar_value(int module_number, uint16_t prescalar_value)
 {
-	pwm_instance[module_number]->clock = (prescalar_value << 1);
+	*pwm_clock_register = (prescalar_value << 1);
 }
 
 /** @fn pwm_reset_all
@@ -221,7 +212,7 @@ void pwm_reset_all(int module_number)
 		pwm_clear(i);
 	}
 
-	pwm_instance[module_number]->clock=0;
+	*pwm_clock_register = 0;
 	log_debug("\n All registers cleared");
 }
 
@@ -304,6 +295,7 @@ void pwm_stop(int module_number)
 void pwm_show_values(int module_number)
 {	
 	log_info("\n MODULE SPECIFIC REGISTERS");
+	// log_info("\n PWM %d Clock Control Register %d",module_number,  )
 	log_info("\n PWM %d Period Register %d" ,module_number, pwm_instance[module_number]->period);
 	log_info("\n PWM %d Control Register %d" ,module_number, pwm_instance[module_number]->control);
 	log_info("\n PWM %d Duty Register %d" ,module_number, pwm_instance[module_number]->duty);

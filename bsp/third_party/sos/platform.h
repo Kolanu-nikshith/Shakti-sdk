@@ -64,8 +64,10 @@ platform.h - header file for SoS C class SoC on artix7_100t
 #define HEAP_PERCENTAGE 50 /*! DDR3 Memory Size */
 
 /*!Pulse Width Modulation Start Offsets */
+#define PWM_MAX_COUNT 6
 #define PWM_BASE_ADDRESS 0x00030000 /*PWM Base address*/
-#define PWM_MODULE_OFFSET 0x00000100 /*Offset value to be incremented for each interface*/
+#define PWM_BASE0_ADDRESS 0x00030004
+#define PWM_MODULE_OFFSET 0x0000010 /*Offset value to be incremented for each interface*/
 
 /*!Serial Peripheral Interface Offsets */
 #define SPI0_START 0x00020000 /* Serial Peripheral Interface 0 */
