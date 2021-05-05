@@ -6,7 +6,14 @@
 
 unsigned handle_button_press (unsigned num)
 {
-	log_info("GPIO %x (active low) interrupt occured\n", (num - PLIC_GPIO_OFFSET) );
+	log_info("GPIO %x interrupt occured\n", (num - PLIC_GPIO_OFFSET - 1) );
+
+	/* When interrupt is triggered in the any pin GPIO_0 will toggle */
+
+	gpiov2_instance->direction = 0x0001;
+	gpiov2_instance->toggle = 1;
+	gpiov2_instance->toggle = 0;
+
 	return 0;
 }
 
@@ -23,28 +30,62 @@ void main()
 
 	gpiov2_init();
     gpiov2_instance->direction = 0x00;
-	gpiov2_instance->intr_config = 0xff; //Make interrupts active low.
+
+	/* Checking for active low */
+	// gpiov2_instance->intr_config = 0xff;
+
+	/* Chexking for active high */
+	gpiov2_instance->intr_config = 0x00;
+
     plic_init();
 
+/* GPIO_0 */
     // configure_interrupt(PLIC_INTERRUPT_7);
-	configure_interrupt(PLIC_INTERRUPT_8);
-	// configure_interrupt(PLIC_INTERRUPT_9);
-	// configure_interrupt(PLIC_INTERRUPT_10);
-	// configure_interrupt(PLIC_INTERRUPT_11);
-	// configure_interrupt(PLIC_INTERRUPT_12);
-	// configure_interrupt(PLIC_INTERRUPT_13);
-	// configure_interrupt(PLIC_INTERRUPT_14);
-	// configure_interrupt(PLIC_INTERRUPT_15);
-
 	// isr_table[PLIC_INTERRUPT_7] = handle_button_press;
-	isr_table[PLIC_INTERRUPT_8] = handle_button_press;
+
+/* GPIO_1 */
+	// configure_interrupt(PLIC_INTERRUPT_8);
+	// isr_table[PLIC_INTERRUPT_8] = handle_button_press;
+
+/* GPIO_2 */
+	// configure_interrupt(PLIC_INTERRUPT_9);
 	// isr_table[PLIC_INTERRUPT_9] = handle_button_press;
+	
+/* GPIO_3 */	
+	// configure_interrupt(PLIC_INTERRUPT_10);
 	// isr_table[PLIC_INTERRUPT_10] = handle_button_press;
+	
+/* GPIO_4 */	
+	// configure_interrupt(PLIC_INTERRUPT_11);
 	// isr_table[PLIC_INTERRUPT_11] = handle_button_press;
+
+/* GPIO_5 */	
+	// configure_interrupt(PLIC_INTERRUPT_12);
 	// isr_table[PLIC_INTERRUPT_12] = handle_button_press;
+
+/* GPIO_6 */	
+	// configure_interrupt(PLIC_INTERRUPT_13);
 	// isr_table[PLIC_INTERRUPT_13] = handle_button_press;
+
+/* GPIO_7 */	
+	// configure_interrupt(PLIC_INTERRUPT_14);
 	// isr_table[PLIC_INTERRUPT_14] = handle_button_press; 
+
+/* GPIO_8 */	
+	// configure_interrupt(PLIC_INTERRUPT_15);
 	// isr_table[PLIC_INTERRUPT_15] = handle_button_press; 
+
+/* GPIO_9 */
+	configure_interrupt(PLIC_INTERRUPT_16);
+	isr_table[PLIC_INTERRUPT_16] = handle_button_press; 
+
+/* GPIO_10 */
+	// configure_interrupt(PLIC_INTERRUPT_17);
+	// isr_table[PLIC_INTERRUPT_17] = handle_button_press; 
+
+/* GPIO_11 */
+	// configure_interrupt(PLIC_INTERRUPT_18);
+	// isr_table[PLIC_INTERRUPT_18] = handle_button_press; 
 
 
 	// Enable Global (PLIC) interrupts.
@@ -52,6 +93,7 @@ void main()
 		     "csrrs   zero, mstatus, t0\t\n"
 		    );
 
+	// Enable Local (PLIC) interrupts.
 	asm volatile("li      t0, 0x800\t\n"
 		     "csrrs   zero, mie, t0\t\n"
 		    );
@@ -64,7 +106,7 @@ void main()
 		     (retval)
 		    );
 
-	printf(" retval = %x\n", retval);
+	log_debug("mstatus = %x\n", retval);
 
 	asm volatile(
 		     "csrr %[retval], mie\n"
@@ -74,7 +116,7 @@ void main()
 		     (retval)
 		    );
 
-	printf(" retval = %x\n", retval);
+	log_debug("mie = %x\n", retval);
 
 	asm volatile(
 		     "csrr %[retval], mip\n"
@@ -84,22 +126,21 @@ void main()
 		     (retval)
 		    );
 
-	printf(" retval = %x\n", retval);
+	log_debug("mip = %u\n", retval);
 
 	while(1){
-		asm volatile(
-			     "csrr %[retval], mip\n"
-			     :
-			     [retval]
-			     "=r"
-			     (retval)
-			    );
-
 		i++;
 
 		if((i%10000000) == 0){
-			printf(" retval = %x\n", retval);
-		}
 
+			asm volatile(
+				     "csrr %[retval], mip\n"
+				     :
+				     [retval]
+				     "=r"
+				     (retval)
+				    );
+			log_debug("mip = %u\n", retval);
+		}
 	}
 }

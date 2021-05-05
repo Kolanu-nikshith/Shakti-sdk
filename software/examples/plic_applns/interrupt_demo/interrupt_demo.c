@@ -29,6 +29,11 @@
   pin is pressed. An interrupt is generated and it is handled by the isr.
  */
 
+#ifdef sos
+#include "gpiov2.h" 
+#include "plic_driver.h"
+#include "platform.h"
+#else
 #include "gpio.h"
 #include "uart.h"
 #include "utils.h"
@@ -38,6 +43,8 @@
 #include "log.h"
 #include "defines.h"
 #include "memory.h"
+#endif
+
 
 void handle_button_press(__attribute__((unused)) uint32_t num);
 
@@ -55,10 +62,10 @@ void handle_button_press(__attribute__((unused)) uint32_t num)
 	   pin IO1 in pinaka
 	   Set GPIO1 in GPIO_DIRECTION_CNTRL_REG to 1, for write.
 	   Set GPIO1 to 1 to indicate output HIGH.
-	 */
+	*/
 
-	write_word(GPIO_DIRECTION_CNTRL_REG, 0x0000002);
-	write_word(GPIO_DATA_REG, 0x00FFFFFF);
+	// write_word(GPIO_DIRECTION_CNTRL_REG, 0x0000002);
+	// write_word(GPIO_DATA_REG, 0x00FFFFFF);
 }
 
 /** @fn main
@@ -69,6 +76,9 @@ int main(void){
 	register unsigned int retval;
 	int i;
 
+#ifdef sos
+	check_gpiov2();
+#else	
 	//init plic module
 	plic_init();
 
@@ -133,5 +143,6 @@ int main(void){
 			log_debug("mip = %u\n", retval);
 		}
 	}
+#endif	
 	return 0;
 }

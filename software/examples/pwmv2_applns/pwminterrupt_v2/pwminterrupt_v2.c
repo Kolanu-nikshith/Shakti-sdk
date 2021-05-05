@@ -71,7 +71,7 @@ int main()
 
     check_pwmv2();
 	/* Enable when need rise interrupt */
-#if 1	
+#if 0	
 	pwm_init();
     pwm_set_prescalar_value(PWM_0, 0xf2);
  	pwm_configure(PWM_0, 0xff, 0x01, rise_interrupt, 0x1, false);
@@ -84,10 +84,14 @@ int main()
 #if 0
 	pwm_init();
     pwm_set_prescalar_value(PWM_0, 0xf2);
- 	pwm_configure(PWM_0, 0xff, 0x01, fall_interrupt, 0x1, false);
+ 	pwm_configure(PWM_0, 0xff, 80, fall_interrupt, 0x1, false);
     pwm_start(PWM_0);
     pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_FALL_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
-#endif	
+#endif
+
+#if 0
+
+#endif
     return 0;
 }
