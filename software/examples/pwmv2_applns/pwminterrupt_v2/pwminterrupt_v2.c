@@ -1,6 +1,7 @@
 
 #include "pwmv2.h"
 #include "plic_driver.h"
+#include "gpiov2.h"
 #define PWM_0 0
 
 void handle_pwm_interrupt( uint32_t num)
@@ -20,6 +21,9 @@ int main()
 
     register unsigned int retval;
 	int i;
+
+	gpiov2_init();
+	gpiov2_instance->direction = 0xffff;
 
 	plic_init();
 
@@ -77,6 +81,7 @@ int main()
  	pwm_configure(PWM_0, 0xff, 0x01, rise_interrupt, 0x1, false);
     pwm_start(PWM_0);
     pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
+	// gpiov2_instance->set = 0x1;
 	pwm_show_values(PWM_0);
 #endif
 
@@ -90,8 +95,15 @@ int main()
 	pwm_show_values(PWM_0);
 #endif
 
-#if 0
-
+	/* Enable when halfperiod_interrupt interrupt */
+#if 1
+	pwm_init();
+    pwm_set_prescalar_value(PWM_0, 0xf2);
+ 	pwm_configure(PWM_0, 0xff, 80, halfperiod_interrupt, 0x1, false);
+    pwm_start(PWM_0);
+    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_HALFPERIOD_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
+	pwm_show_values(PWM_0);
 #endif
+
     return 0;
 }

@@ -5,6 +5,7 @@
  * @brief  driver for gpio driver
  */
 
+#include <stdio.h>
 #include "gpiov2.h"
 #include "platform.h"
 

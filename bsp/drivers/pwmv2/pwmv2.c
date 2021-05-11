@@ -77,6 +77,7 @@ int pwm_set_control(int module_number, uint32_t value)
 	pwm_instance[module_number]->control=value;
 
 	log_debug("\n Control Register of module number %d set to %x", module_number, value);
+	log_info("\n Control Register of module number %d set to %x", module_number, value);
 
 	return 1;
 }
@@ -295,7 +296,7 @@ void pwm_stop(int module_number)
 void pwm_show_values(int module_number)
 {	
 	log_info("\n MODULE SPECIFIC REGISTERS");
-	// log_info("\n PWM %d Clock Control Register %d",module_number,  )
+	log_info("\n PWM %d Clock Control Register %d",module_number, *pwm_clock_register);
 	log_info("\n PWM %d Period Register %d" ,module_number, pwm_instance[module_number]->period);
 	log_info("\n PWM %d Control Register %d" ,module_number, pwm_instance[module_number]->control);
 	log_info("\n PWM %d Duty Register %d" ,module_number, pwm_instance[module_number]->duty);
