@@ -25,28 +25,23 @@
 /* Struct to access GPIO registers as 16 bit registers */
 typedef struct
 {
-	uint16_t  direction;	           /*! direction register */
-	uint16_t  reserved00;              /*! reserved for future use */
-	uint32_t  reserved01;              /*! reserved for future use */
-	uint16_t  data;	        		   /*! data register */
-	uint16_t  reserved02;              /*! reserved for future use */
-	uint32_t  reserved03;              /*! reserved for future use */
-	uint16_t  set;	         	   /*! set register */
-	uint16_t  reserved04;              /*! reserved for future use */
-	uint32_t  reserved05;              /*! reserved for future use */
-	uint16_t  clear;	         	   /*! clear register */
-	uint16_t  reserved06;              /*! reserved for future use */
-	uint32_t  reserved07;              /*! reserved for future use */
-	uint16_t  toggle;	            /*! toggle register */
-	uint16_t  reserved08;              /*! reserved for future use */
-	uint32_t  reserved09;              /*! reserved for future use */
+	uint32_t  direction;	           /*! direction register */
+	uint32_t  reserved0;                /*! reserved for future use */
+	uint32_t  data;	        		   /*! data register */
+	uint32_t  reserved1;                /*! reserved for future use */
+	uint32_t  set;	         	   /*! set register */
+	uint32_t  reserved2;                /*! reserved for future use */
+	uint32_t  clear;	         	   /*! clear register */
+	uint32_t  reserved3;                /*! reserved for future use */
+	uint32_t  toggle;	            /*! toggle register */
+	uint32_t  reserved4;                /*! reserved for future use */
 	uint8_t  qualification;	   /*! qualification register */
-	uint8_t  reserved10;                /*! reserved for future use */
-	uint16_t  reserved11;              /*! reserved for future use */
+	uint8_t  reserved5;                /*! reserved for future use */
+	uint16_t  reserved6;              /*! reserved for future use */
 	uint32_t  reserved12;              /*! reserved for future use */
-	uint16_t  intr_config;	   /*! interrupt configuration register */
-	uint16_t  reserved13;              /*! reserved for future use */
-	uint32_t  reserved14;              /*! reserved for future use */
+	uint32_t  intr_config;	   /*! interrupt configuration register */
+//	uint16_t  reserved13;              /*! reserved for future use */
+	uint32_t  reserved7;              /*! reserved for future use */
 } gpio_struct;
 
 extern gpio_struct *gpiov2_instance;
