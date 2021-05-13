@@ -21,7 +21,7 @@ int main()
 	pwm_stop(PWM_0);
 	pwm_configure(PWM_0, 0xf0, 0x80, no_interrupt, 0x1, false);
 	pwm_start(PWM_0);
-	pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_OUTPUT_POLARITY ));
+	pwm_set_control(PWM_0, (PWM_ENABLE |PWM_OUTPUT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
 	pwm_show_frequency(PWM_0, 50000, 0xf0);
     return 0;

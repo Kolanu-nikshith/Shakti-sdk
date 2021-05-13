@@ -51,14 +51,14 @@ int main()
 	pwm_init();
 #if 1
 	//Uncomment this for testing PWM 0
-	pwm_set_prescalar_value(PWM_0, 50000);
+	pwm_set_prescalar_value(PWM_0, 5000);
 	pwm_clear(PWM_0);
 	pwm_stop(PWM_0);
-	pwm_configure(PWM_0, 0xf0, 0x80, no_interrupt, 0x1, false);
+	pwm_configure(PWM_0, 10000, 5000, no_interrupt, 0x1, false);
 	pwm_start(PWM_0);
 	pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
-	pwm_show_frequency(PWM_0, 50000, 0xf0);
+	pwm_show_frequency(PWM_0, 5000, 10000);
 #endif
 #if 0
 	//Uncomment this for testing PWM 1

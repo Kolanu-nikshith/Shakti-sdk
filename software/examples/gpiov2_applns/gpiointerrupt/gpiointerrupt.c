@@ -2,17 +2,56 @@
 #include "plic_driver.h"
 #include "platform.h"
 
-
+#define ACTIVE_HIGH_to_LOW 0
+#define ACTIVE_LOW_to_HIGH 0
 
 unsigned handle_button_press (unsigned num)
 {
+
+#if ACTIVE_LOW_to_HIGH
+	log_info("\nActive low interrupt");
+#endif	
+
+#if ACTIVE_HIGH_to_LOW
+	log_info("\nActive high interrupt");
+#endif
+
 	log_info("GPIO %x interrupt occured\n", (num - PLIC_GPIO_OFFSET - 1) );
 
-	/* When interrupt is triggered in the any pin GPIO_0 will toggle */
+#if ACTIVE_LOW_to_HIGH
+	/* Check the GPIO interrupt switch from Active low to Active high */
+				/* TEST DONE on GPIO_2 */
+	gpiov2_instance->direction = 0x0;
+	if (gpiov2_instance->data == 4)
+	{
+		log_info("\nActive high interrupt");
+		delay_loop(1000,1000);
+		gpiov2_instance->intr_config = 0x00;
+		configure_interrupt(PLIC_INTERRUPT_9);
+		isr_table[PLIC_INTERRUPT_9] = handle_button_press;	
+	}
+#endif	
 
-	gpiov2_instance->direction = 0x0001;
-	gpiov2_instance->toggle = 1;
-	gpiov2_instance->toggle = 0;
+#if ACTIVE_HIGH_to_LOW
+	/* Check the GPIO interrupt switch from Active low to Active high */
+				/* TEST DONE on GPIO_2 */
+	gpiov2_instance->direction = 0x0;
+	if (gpiov2_instance->data == 0)
+	{
+		log_info("\nActive low interrupt");
+		delay_loop(1000,1000);
+		gpiov2_instance->intr_config = 0xff;
+		configure_interrupt(PLIC_INTERRUPT_9);
+		isr_table[PLIC_INTERRUPT_9] = handle_button_press;	
+	}
+#endif	
+
+#if 0
+	/* When interrupt is triggered in the any pin GPIO_0 will toggle */
+	// gpiov2_instance->direction = 0x0001;
+	// gpiov2_instance->toggle = 1;
+	// gpiov2_instance->toggle = 0;
+#endif
 
 	return 0;
 }
@@ -87,41 +126,40 @@ void main()
 	// configure_interrupt(PLIC_INTERRUPT_18);
 	// isr_table[PLIC_INTERRUPT_18] = handle_button_press; 
 
-#if 0
-/* Check the GPIO interrupt switch from Active high to Active low */
+/* GPIO_12 */
+	// configure_interrupt(PLIC_INTERRUPT_19);
+	// isr_table[PLIC_INTERRUPT_19] = handle_button_press; 
+
+/* GPIO_13 */
+	// configure_interrupt(PLIC_INTERRUPT_20);
+	// isr_table[PLIC_INTERRUPT_20] = handle_button_press; 
+
+/* GPIO_14 */
+	// configure_interrupt(PLIC_INTERRUPT_21);
+	// isr_table[PLIC_INTERRUPT_21] = handle_button_press; 
+
+/* GPIO_15 */
+	// configure_interrupt(PLIC_INTERRUPT_22);
+	// isr_table[PLIC_INTERRUPT_22] = handle_button_press; 		
+
+#if ACTIVE_LOW_to_HIGH
+/* Check the GPIO interrupt switch from Active low to Active high */
 
 	/* Checking for active low */
-	printf("\nIn active low");
 	gpiov2_instance->intr_config = 0xff;
 	configure_interrupt(PLIC_INTERRUPT_9);
 	isr_table[PLIC_INTERRUPT_9] = handle_button_press;
 
-	delay_loop(10000, 10000);
-	printf("\n================================================================");
-	// delay_loop(10000, 10000);
-
-
-	/* Checking for active high */
-	printf("\nIn active high");
-	gpiov2_instance->intr_config = 0x00;
-	configure_interrupt(PLIC_INTERRUPT_8);
-	isr_table[PLIC_INTERRUPT_8] = handle_button_press;	
 #endif	
 
-#if 0
+#if ACTIVE_HIGH_to_LOW
 /* Check the GPIO interrupt switch from Active high to Active low */
 
 	/* Checking for active high */
 	gpiov2_instance->intr_config = 0x00;
-	configure_interrupt(PLIC_INTERRUPT_8);
-	isr_table[PLIC_INTERRUPT_8] = handle_button_press;
-
-	delay_loop(1000, 1000);
-
-	/* Checking for active low */
-	gpiov2_instance->intr_config = 0xff;
 	configure_interrupt(PLIC_INTERRUPT_9);
-	isr_table[PLIC_INTERRUPT_9] = handle_button_press;	
+	isr_table[PLIC_INTERRUPT_9] = handle_button_press;
+
 #endif
 
 	// Enable Global (PLIC) interrupts.
