@@ -211,6 +211,9 @@ else
 ifeq ($(PROGRAM),mpu6050)
 filepath := i2c_applns/mpu6050
 else
+ifeq ($(PROGRAM),multi_slave)
+filepath := i2c_applns/multi_slave
+else
 ifeq ($(PROGRAM),btnled)
 filepath := gpio_applns/btnled
 else
@@ -355,11 +358,8 @@ else
 ifeq ($(PROGRAM),pwminterrupt_v2)
 filepath := pwmv2_applns/pwminterrupt_v2
 else
-ifeq ($(PROGRAM),pwmupenable_v2)
-filepath := pwmv2_applns/pwmupenable_v2
-else
-ifeq ($(PROGRAM),pwmpolarity_v2)
-filepath := pwmv2_applns/pwmpolarity_v2
+ifeq ($(PROGRAM),pwmcreset_v2)
+filepath := pwmv2_applns/pwmcreset_v2
 else
 ifeq ($(PROGRAM),pwmdeadband_v2)
 filepath := pwmv2_applns/pwmdeadband_v2
@@ -380,12 +380,12 @@ endif
 endif
 endif
 endif
-endif
 endif	
 endif
 endif	
 endif
 endif	
+endif
 endif
 endif
 endif
