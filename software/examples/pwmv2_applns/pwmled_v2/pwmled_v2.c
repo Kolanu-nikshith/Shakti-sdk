@@ -49,7 +49,7 @@ int main()
 	check_pwmv2();
 	*pinmux_config_reg = 0x2aa80;
 	pwm_init();
-#if 0
+#if 1
 	//Uncomment this for testing PWM 0
 	pwm_set_prescalar_value(PWM_0, 50000);
 	pwm_clear(PWM_0);
@@ -58,6 +58,7 @@ int main()
 	pwm_start(PWM_0);
 	pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
+	pwm_show_frequency(PWM_0, 50000, 0xf0);
 #endif
 #if 0
 	//Uncomment this for testing PWM 1
@@ -108,7 +109,7 @@ int main()
 	pwm_set_control(PWM_5, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 #endif
 
-#if 1
+#if 0
 	//Uncomment this for testing PWM 0 as disabling output 
 	pwm_set_prescalar_value(PWM_0, 50000);
 	pwm_clear(PWM_0);
@@ -117,6 +118,7 @@ int main()
 	pwm_start(PWM_0);
 	pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
+	pwm_show_frequency(PWM_0, 50000, 0xf0);
 #endif
 	return 0;
 }

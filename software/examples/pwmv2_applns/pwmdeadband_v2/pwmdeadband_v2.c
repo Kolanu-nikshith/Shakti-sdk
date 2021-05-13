@@ -52,7 +52,8 @@ int main()
     check_pwmv2();
 	pwm_init();
 	// Put the OSCILOSCOPE in PWM_0 and PWM_1 to check the deadband delay
-    pwm_configure(PWM_1,0xff,0xff,rise_interrupt,0x0,false);
+	pwm_configure(PWM_0,0xff,0xff,rise_interrupt,0x0,false);
+    pwm_configure(PWM_1,0xff,0xff,rise_interrupt,0x1,false);
 
 	while(1);
 

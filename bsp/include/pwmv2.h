@@ -83,6 +83,7 @@ void pwm_reset_all();
 void pwm_configure(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , uint32_t deadband_delay, bool change_output_polarity); 
 void pwm_update(int module_number, uint32_t period, uint32_t duty, pwm_interrupt_modes interrupt_mode , bool change_output_polarity);
 void show_values(int module_number);
+void pwm_show_frequency(int module_number, uint16_t prescalar_value, uint32_t period);
 void pwm_isr_handler0();
 void pwm_isr_handler1();
 void pwm_isr_handler2();

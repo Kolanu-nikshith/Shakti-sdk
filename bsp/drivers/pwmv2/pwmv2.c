@@ -293,6 +293,13 @@ void pwm_stop(int module_number)
 	log_debug("\n PWM module number %d has been stopped", module_number);
 }
 
+void pwm_show_frequency(int module_number, uint16_t prescalar_value, uint32_t period)
+{
+	int frequency;
+	frequency = CLOCK_FREQUENCY/((period*prescalar_value)+1);
+	log_info("\n PWM %d The expected Frequency %d", module_number, frequency);
+}
+
 void pwm_show_values(int module_number)
 {	
 	log_info("\n MODULE SPECIFIC REGISTERS");
