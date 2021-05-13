@@ -3,7 +3,7 @@
  * Name of the file                      : uart.c
  * Brief Description of file             : src  file for uart
  * Name of Author                        : Kotteeswaran and Niketan Shahapur
- * Email ID                              : <kottee.1@gmail.com>  <niketanshahpur@gmail.com> 
+ * Email ID                              : <kottee.1@gmail.com>  <niketanshahpur@gmail.com>
 
  Copyright (C) 2019 IIT Madras. All rights reserved.
 
@@ -23,7 +23,7 @@
 /**
   @file uart.c
   @brief Contains the driver routines for UART interface.
-  @detail The UART driver .has software functions to configure, transmit 
+  @detail The UART driver .has software functions to configure, transmit
   and receive over UART interface.
  */
 
@@ -34,7 +34,7 @@
 volatile uart_struct *uart_instance[MAX_UART_COUNT];
 
 #define RTS GPIO4
-//#define USE_INTERRUPT 
+//#define USE_INTERRUPT
 
 unsigned char uart0_complete = 0;
 unsigned char uart1_complete = 0;
@@ -54,8 +54,8 @@ unsigned char u2_rcv_char[UARTX_BUFFER_SIZE] = {'\0'};
 
 /**
  * @fn void uart_init()
- * @brief Initialise UART Array 
- * @details Initialises given number of UART Arrays which has 
+ * @brief Initialise UART Array
+ * @details Initialises given number of UART Arrays which has
  *          complete set of UART registers.
  */
 void uart_init()
@@ -75,14 +75,14 @@ void uart_init()
 #undef getchar
 int getchar()
 {
-	while((uart_instance[0]->status & STS_RX_NOT_EMPTY) == 0); 
+	while((uart_instance[0]->status & STS_RX_NOT_EMPTY) == 0);
 	return (uart_instance[0]->rcv_reg);
 }
 
 /**
  * @fn int putchar(int ch)
  * @brief Function to write a single character to the standard output device.
- * @details This function will be called to print a single character to the stdout by passing 
+ * @details This function will be called to print a single character to the stdout by passing
  * character as an integer.
  * @param character as int.
  * @return Zero
@@ -107,22 +107,28 @@ int putchar(int ch)
  */
 void set_baud_rate(uart_struct *instance, unsigned int baudrate)
 {
-	unsigned int baud_count = 0;
-	baud_count = CLOCK_FREQUENCY / (16 * baudrate);
-	instance->baud = baud_count;
+	float baud_count = 0.0;
+	unsigned int baud_value = 0;
+	baud_count = CLOCK_FREQUENCY / (16.0 * baudrate);
+	if( (baud_count - (int) baud_count) > 0.5 )
+		baud_value = (((int) baud_count) + 1) ;
+	else
+		baud_value =  (int) baud_count;
+
+	instance->baud = baud_value;
 }
 
 /**
- * @fn void enable_uart_interrupts(uart_struct * instance, unsigned char interrupt) 
+ * @fn void enable_uart_interrupts(uart_struct * instance, unsigned char interrupt)
  * @brief Function to enable the interrupts of a perticular uart instance.
  * @details This function will be called to enable the interrupts of a specific uart instance by passing
  * the interrupt's values.
- * @param uart instance 
+ * @param uart instance
  * @param unsigned char interrupt
  */
 void enable_uart_interrupts(uart_struct * instance, unsigned char interrupt)
 {
-	instance->ien = interrupt; 
+	instance->ien = interrupt;
 }
 
 #ifdef USE_RX_THRESHOLD
@@ -131,7 +137,7 @@ void enable_uart_interrupts(uart_struct * instance, unsigned char interrupt)
  * @brief Funtion to set the threshold value of the Rx FIFO.
  * @details This function will be called to set the threshold value of the Rx FIFO of a specific uart instance
  * by passing the threshold value.
- * @param uart instance 
+ * @param uart instance
  * @param unsigned char rxthreshold
  */
 void set_uart_rx_threshold(uart_struct * instance, unsigned char rxthreshold)
@@ -142,7 +148,7 @@ void set_uart_rx_threshold(uart_struct * instance, unsigned char rxthreshold)
 
 /**
  * @fn uint32_t write_uart_character(uart_struct * instance, uint8_t prn_character)
- * @brief Function to write a single character to a specific uart instance. 
+ * @brief Function to write a single character to a specific uart instance.
  * @details This function will be called to write a character to a specific uart instance by passing the
  * character.
  * @param uart instance
@@ -162,7 +168,7 @@ uint32_t write_uart_character(uart_struct * instance, uint8_t prn_character)
  * @brief Function to write a string to a specific uart instance.
  * @details This function will be called to write a string to a specific uart instance by passing the
  * string.
- * @param uart instance 
+ * @param uart instance
  * @param string.
  * @return Zero
  */
@@ -185,7 +191,7 @@ uint32_t write_uart_string(uart_struct * instance, uint8_t * ptr_string)
  * @brief Function to read a character from a specific instance.
  * @details This function will be called to read a character from a specific uart instance by passing the
  * character pointer to store the character.
- * @param uart instance 
+ * @param uart instance
  * @param pointer to a character.
  * @return number of characters read
  */
@@ -204,7 +210,7 @@ uint8_t read_uart_character(uart_struct * instance, char * prn_character)
 /**
  * @fn uint8_t read_uart_string(uart_struct * instance, char * ptr_string)
  * @brief Function to read a string from a specific uart instance.
- * @details This function will be called to read a string, one character at a time from a 
+ * @details This function will be called to read a string, one character at a time from a
  * specific uart instance by passing the array in which to store the string by reference using pointers.
  * @param UART instance
  * @param pointer to an array of character.

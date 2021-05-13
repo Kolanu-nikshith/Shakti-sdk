@@ -30,7 +30,7 @@ export FLASHSPEC
 export GENLIB
 
 # Default PROGRAM and TARGET
-PROGRAM ?= 
+PROGRAM ?=
 TARGET ?= pinaka
 DEBUG ?= DEBUG
 CLEAR ?=
@@ -174,6 +174,7 @@ ifeq ($(PROGRAM),)
 	cd ./software/examples/spi_applns && $(MAKE) clean CLEAR=CLEAR
 	cd ./software/examples/sspi_applns && $(MAKE) clean CLEAR=CLEAR
 	cd ./software/examples/uart_applns && $(MAKE) clean CLEAR=CLEAR
+	cd ./software/examples/uart_testcases && $(MAKE) clean CLEAR=CLEAR
 	cd ./software/examples/i2c_applns && $(MAKE) clean CLEAR=CLEAR
 	cd ./software/examples/gpio_applns && $(MAKE) clean CLEAR=CLEAR
 	cd ./software/examples/gpiov2_applns && $(MAKE) clean CLEAR=CLEAR
