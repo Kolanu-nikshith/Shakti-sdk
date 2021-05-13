@@ -389,7 +389,19 @@ else
 ifeq ($(PROGRAM),txrxlen)
 filepath := uart_testcases/txrxlen
 else
+ifeq ($(PROGRAM),sspi_full_duplex)
+filepath := sspi_applns/sspi_full_duplex
+else
+ifeq ($(PROGRAM),sspi_MSB_check)
+filepath := sspi_applns/sspi_MSB_check
+else
+ifeq ($(PROGRAM),sspi_LSB_check)
+filepath := sspi_applns/sspi_LSB_check
+else
 	@echo "Entry for $(PROGRAM) not present"
+endif
+endif
+endif
 endif
 endif
 endif
