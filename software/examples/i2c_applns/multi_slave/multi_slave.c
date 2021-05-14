@@ -208,9 +208,6 @@ unsigned int ds3231_decimal_to_hex(unsigned int decimal)
  */
 int main()
 {
-
-while(1)
-{	
 	int timeout;
 	unsigned int tempReadValue = 0;
 	unsigned long delay = 1000;
@@ -227,6 +224,33 @@ while(1)
 		}
 	else
 				log_info("\tIntilization Happened Fine\n");
+
+
+unsigned int write_buf[7] = {0x00}, read_buf[7] = {0x00};
+		unsigned char length;
+		unsigned int hour, minute, second, date, month, year;
+	
+		hour = 11;
+		minute = 46;
+		second = 30;
+	
+		date = 25;
+		month = 01;
+		year = 2020;
+	
+		write_buf[0] = DS3231_DEC_TO_HEX(second); //Seconds
+		write_buf[1] = DS3231_DEC_TO_HEX(minute); //Minutes
+		write_buf[2] = DS3231_DEC_TO_HEX(hour); //Hours
+	
+		write_buf[4] = DS3231_DEC_TO_HEX(date); //Seconds
+		write_buf[5] = DS3231_DEC_TO_HEX(month); //Minutes
+		write_buf[6] = DS3231_DEC_TO_HEX( (year % 100) ); //Hours
+	
+		write_buf[3] = dayofweek(date, month, year) + 1;
+		length = 7;
+while(1)
+{	
+	
 #ifdef LM75_HYST_CHECK
 	write_lm75_register(I2C, LM75_HYST_REG_OFFSET, 0x30, delay);
 		if(0 == read_lm75_register(I2C, LM75_HYST_REG_OFFSET, &tempReadValue, delay))
@@ -280,41 +304,10 @@ while(1)
 	}
 
 
-		unsigned int write_buf[7] = {0x00}, read_buf[7] = {0x00};
-		unsigned char length;
-		unsigned int hour, minute, second, date, month, year;
-	
-		hour = 11;
-		minute = 46;
-		second = 30;
-	
-		date = 25;
-		month = 01;
-		year = 2020;
-	
-		write_buf[0] = DS3231_DEC_TO_HEX(second); //Seconds
-		write_buf[1] = DS3231_DEC_TO_HEX(minute); //Minutes
-		write_buf[2] = DS3231_DEC_TO_HEX(hour); //Hours
-	
-		write_buf[4] = DS3231_DEC_TO_HEX(date); //Seconds
-		write_buf[5] = DS3231_DEC_TO_HEX(month); //Minutes
-		write_buf[6] = DS3231_DEC_TO_HEX( (year % 100) ); //Hours
-	
-		write_buf[3] = dayofweek(date, month, year) + 1;
-		length = 7;
+		
 	
 //	set_baud_rate(uart_instance[0], 115200);
-	printf("\nHello Welcome to Shakti");
-
-	i2c_init();
-
-	if(config_i2c(I2C, PRESCALER_COUNT, SCLK_COUNT))
-	{
-		log_error("\tSomething Wrong In Initialization\n");
-		return -1;
-	}
-	else
-		log_info("\tIntilization Happened Fine\n");
+		
 #ifdef UPDATE_TIME
 	write_ds3231_registers(I2C, 0x00, &write_buf[0], length, delay);
 			printf("\n Write complete");
