@@ -212,6 +212,9 @@ else
 ifeq ($(PROGRAM),mpu6050)
 filepath := i2c_applns/mpu6050
 else
+ifeq ($(PROGRAM),multi_slave)
+filepath := i2c_applns/multi_slave
+else
 ifeq ($(PROGRAM),btnled)
 filepath := gpio_applns/btnled
 else
@@ -405,6 +408,7 @@ ifeq ($(PROGRAM),sspi_LSB_check)
 filepath := sspi_applns/sspi_LSB_check
 else
 	@echo "Entry for $(PROGRAM) not present"
+endif
 endif
 endif
 endif
