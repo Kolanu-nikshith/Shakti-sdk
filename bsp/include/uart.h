@@ -53,10 +53,12 @@ typedef struct
 	unsigned short reserv9;  /*! reserved */
 #ifdef USE_RX_THRESHOLD /*! This is to be used only when support is there. */
 	unsigned char rx_threshold;	/*! RX FIFO size configuration register - 8 bits*/
-	unsigned char reserv10;    /*! reserved */ 
+	unsigned char reserv10;    /*! reserved */
 	unsigned short reserv11;    /*! reserved */
-#endif	
+#endif
 } uart_struct;
+
+#define USE_INTERRUPT
 
 #define STS_RX_THRESHOLD    0x1 << 8
 #define BREAK_ERROR	    1 << 7

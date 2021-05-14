@@ -34,7 +34,7 @@
 volatile uart_struct *uart_instance[MAX_UART_COUNT];
 
 #define RTS GPIO4
-//#define USE_INTERRUPT
+#define USE_INTERRUPT
 
 unsigned char uart0_complete = 0;
 unsigned char uart1_complete = 0;

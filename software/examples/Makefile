@@ -308,6 +308,12 @@ else
 ifeq ($(PROGRAM),interrupt_demo)
 filepath := plic_applns/interrupt_demo
 else
+ifeq ($(PROGRAM),uart00_interrupt_test)
+filepath := plic_applns/uart00_interrupt_test
+else
+ifeq ($(PROGRAM),uart01_interrupt_test)
+filepath := plic_applns/uart01_interrupt_test
+else
 ifeq ($(PROGRAM),switches)
 filepath := gpio_applns/switches
 else
@@ -399,6 +405,8 @@ ifeq ($(PROGRAM),sspi_LSB_check)
 filepath := sspi_applns/sspi_LSB_check
 else
 	@echo "Entry for $(PROGRAM) not present"
+endif
+endif
 endif
 endif
 endif
