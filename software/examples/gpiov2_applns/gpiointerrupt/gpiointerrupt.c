@@ -63,6 +63,7 @@ void main()
     register uint32_t retval;
     int i;
 
+    gpiov2_instance->direction = 0xf0000;
     check_gpiov2();
     printf("\n Starting GPIO INTERRUPT tests \n");
     printf("\n GPIO_INTERRUPT_OFFSET: %x; PLIC_MAX_INTERRUPT_SRC: %x; Intr.Src: %x",PLIC_GPIO_OFFSET, PLIC_MAX_INTERRUPT_SRC, int_id);

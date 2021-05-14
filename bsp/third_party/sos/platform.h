@@ -95,12 +95,12 @@ platform.h - header file for SoS C class SoC on artix7_100t
 
 /*! Programmable Logic Interrupt Interface */
 #define PLIC_BASE_ADDRESS 0x0C000000 /*! PLIC Interface Start */
-#define PLIC_INTERRUPT_1   1	/* PWM 0   */
-#define PLIC_INTERRUPT_2   2	/* PWM 1   */
-#define PLIC_INTERRUPT_3   3	/* PWM 2   */
-#define PLIC_INTERRUPT_4   4	/* PWM 3   */
-#define PLIC_INTERRUPT_5   5	/* PWM 4   */
-#define PLIC_INTERRUPT_6   6	/* PWM 5   */
+#define PLIC_INTERRUPT_1   1	/* PWM 5   */
+#define PLIC_INTERRUPT_2   2	/* PWM 4   */
+#define PLIC_INTERRUPT_3   3	/* PWM 3   */
+#define PLIC_INTERRUPT_4   4	/* PWM 2   */
+#define PLIC_INTERRUPT_5   5	/* PWM 1   */
+#define PLIC_INTERRUPT_6   6	/* PWM 0   */
 #define PLIC_INTERRUPT_7   7	/* GPIO 0  */
 #define PLIC_INTERRUPT_8   8	/* GPIO 1  */
 #define PLIC_INTERRUPT_9   9	/* GPIO 2  */
@@ -122,7 +122,11 @@ platform.h - header file for SoS C class SoC on artix7_100t
 #define PLIC_INTERRUPT_25  25 	/* uart 0  */
 #define PLIC_INTERRUPT_26  26 	/* uart 1  */
 #define PLIC_INTERRUPT_27  27 	/* uart 2  */
-#define PLIC_MAX_INTERRUPT_SRC 28
+#define PLIC_INTERRUPT_28  28 	/* Ethernet  */
+#define PLIC_INTERRUPT_29  29 	/* XADC  */
+#define PLIC_INTERRUPT_30  30 	/* SSPI 1  */
+#define PLIC_INTERRUPT_31  31 	/* SSPI 0  */
+#define PLIC_MAX_INTERRUPT_SRC 31
 
 /*!General Purpose Input / Output */
 #define GPIO_START 0x00040100 //GPIO Start Address */

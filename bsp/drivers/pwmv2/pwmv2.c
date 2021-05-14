@@ -40,7 +40,7 @@
 #define DEADBAND_DELAY_REGISTER_MAX 	0x0000FFFF
 
 
-pwm_struct *pwm_instance[PWM_MAX_COUNT];
+volatile pwm_struct *pwm_instance[PWM_MAX_COUNT];
 
 uint16_t *pwm_clock_register = PWM_BASE_ADDRESS;
 
@@ -74,7 +74,7 @@ void pwm_init()
  */
 int pwm_set_control(int module_number, uint32_t value)
 {
-	pwm_instance[module_number]->control=value;
+	pwm_instance[module_number]->control |= value;
 
 	log_debug("\n Control Register of module number %d set to %x", module_number, value);
 	log_info("\n Control Register of module number %d set to %x", module_number, value);
@@ -196,6 +196,11 @@ void pwm_set_periodic_cycle(int module_number, uint32_t period)
  */
 void pwm_set_prescalar_value(int module_number, uint16_t prescalar_value)
 {
+	if( 32768 < (prescalar_value << 1) )
+	{
+		log_error("Prescaler value should be less than 32768");
+		return;
+	}
 	*pwm_clock_register = (prescalar_value << 1);
 }
 
@@ -303,11 +308,11 @@ void pwm_show_frequency(int module_number, uint16_t prescalar_value, uint32_t pe
 void pwm_show_values(int module_number)
 {	
 	log_info("\n MODULE SPECIFIC REGISTERS");
-	log_info("\n PWM %d Clock Control Register %d",module_number, *pwm_clock_register);
-	log_info("\n PWM %d Period Register %d" ,module_number, pwm_instance[module_number]->period);
-	log_info("\n PWM %d Control Register %d" ,module_number, pwm_instance[module_number]->control);
-	log_info("\n PWM %d Duty Register %d" ,module_number, pwm_instance[module_number]->duty);
-	log_info("\n PWM %d DeadBand Delay Register %d" ,module_number, pwm_instance[module_number]->deadband_delay);
+	log_info("\n PWM %d Clock Control Register %x",module_number, *pwm_clock_register);
+	log_info("\n PWM %d Period Register %x" ,module_number, pwm_instance[module_number]->period);
+	log_info("\n PWM %d Control Register %x" ,module_number, pwm_instance[module_number]->control);
+	log_info("\n PWM %d Duty Register %x" ,module_number, pwm_instance[module_number]->duty);
+	log_info("\n PWM %d DeadBand Delay Register %x" ,module_number, pwm_instance[module_number]->deadband_delay);
 }
 
 //6 pwm

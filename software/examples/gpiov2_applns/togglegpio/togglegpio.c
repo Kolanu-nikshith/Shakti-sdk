@@ -46,10 +46,10 @@ void main()
 	while(1)
 	{
 		gpiov2_instance->set = 0xff0fffff;
-		delay_loop(1000, 1000);
+		delay_loop(3000, 1000);
 		gpiov2_instance->set = 0;
 		gpiov2_instance->clear = 0xff0fffff;
-		delay_loop(1000, 1000);
+		delay_loop(3000, 1000);
 		gpiov2_instance->clear = 0;
 	}
 
@@ -61,7 +61,7 @@ void main()
 	while (1)
 	{
 		gpiov2_instance->toggle = 0xff0fffff;
-		delay_loop(1000, 1000);
+		delay_loop(3000, 1000);
 	}
 #endif
 
