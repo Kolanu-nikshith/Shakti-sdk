@@ -371,9 +371,6 @@ else
 ifeq ($(PROGRAM),pwmpolarity_v2)
 filepath := pwmv2_applns/pwmpolarity_v2
 else
-ifeq ($(PROGRAM),pwmdeadband_v2)
-filepath := pwmv2_applns/pwmdeadband_v2
-else
 ifeq ($(PROGRAM),pwmmotor_v2)
 filepath := pwmv2_applns/pwmmotor_v2
 else
@@ -408,7 +405,6 @@ ifeq ($(PROGRAM),sspi_LSB_check)
 filepath := sspi_applns/sspi_LSB_check
 else
 	@echo "Entry for $(PROGRAM) not present"
-endif
 endif
 endif
 endif
