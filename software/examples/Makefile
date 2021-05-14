@@ -407,7 +407,44 @@ else
 ifeq ($(PROGRAM),sspi_LSB_check)
 filepath := sspi_applns/sspi_LSB_check
 else
+ifeq ($(PROGRAM),sspi_rx_quad_interrupt)
+filepath := sspi_applns/sspi_rx_quad_interrupt
+else
+ifeq ($(PROGRAM),sspi_rx_full_interrupt)
+filepath := sspi_applns/sspi_rx_full_interrupt
+else
+ifeq ($(PROGRAM),sspi_tx_quad_interrupt)
+filepath := sspi_applns/sspi_tx_quad_interrupt
+else
+ifeq ($(PROGRAM),sspi_tx_empty_interrupt)
+filepath := sspi_applns/sspi_tx_empty_interrupt
+else
+ifeq ($(PROGRAM),sspi_tx_half_interrupt)
+filepath := sspi_applns/sspi_tx_half_interrupt
+else
+ifeq ($(PROGRAM),sspi_tx_full_interrupt)
+filepath := sspi_applns/sspi_tx_full_interrupt
+else
+ifeq ($(PROGRAM),sspi_rx_empty_interrupt)
+filepath := sspi_applns/sspi_rx_empty_interrupt
+else
+ifeq ($(PROGRAM),sspi_rx_half_interrupt)
+filepath := sspi_applns/sspi_rx_half_interrupt
+else
+ifeq ($(PROGRAM),sspi_rx_overrun_interrupt)
+filepath := sspi_applns/sspi_rx_overrun_interrupt
+else
+
 	@echo "Entry for $(PROGRAM) not present"
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
 endif
 endif
 endif
