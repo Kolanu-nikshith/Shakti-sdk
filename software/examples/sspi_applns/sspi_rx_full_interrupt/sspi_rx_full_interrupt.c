@@ -1,9 +1,9 @@
 /***************************************************************************
- * Project               	    		:  shakti devt board
- * Name of the file	            		:  sspi_full_duplex.c
- * Brief Description of file             :  sspi full duplex example code.
+ * Project               	    	:  shakti devt board
+ * Name of the file	            	:  sspi_rx_full_interrupt.c
+ * Brief Description of file            :  sspi rx full interrupt code.
  * Name of Author    	                :  Kotteeswaran
- * Email ID                              :  kottee.1@gmail.com
+ * Email ID                             :  kottee.1@gmail.com
 
  Copyright (C) 2019  IIT Madras. All rights reserved.
 
@@ -198,7 +198,6 @@ int spi_notbusy(char number)
 int main()
 {
 
-//	gpt_struct* instance;
 	uint32_t temp = 0, retval = 0;
 	uint8_t i = 0, j = 0;
 	uint8_t temp_data = 0;
@@ -216,23 +215,17 @@ int main()
 	set_shakti32(spi1_clkctrl,(CLKCTRL_PRESCALE(60)|CLKCTRL_POLARITY | CLKCTRL_PHASE));
 	set_shakti8(spi1_inqual, 0x00);
 	temp = spi_notbusy(1);
-	printf("SSPI0 status: %x \n", temp);
+	printf("SSPI1 status: %x \n", temp);
 
 //	set_shakti32(sspi1_clkctrl,(CLKCTRL_PRESCALE(30) |CLKCTRL_POLARITY | CLKCTRL_PHASE));
 	set_shakti8(spi1_inqual, 0x00);
 	temp = spi_notbusy(1);
 	printf("SSPI1 status: %x \n", temp);
 
+	plic_init();
 	configure_interrupt(PLIC_INTERRUPT_30);
-	printf("Setting prority to source 30 \n");
-	set_shakti16(0x0C000078,4);
-	uint16_t temp_prior = get_shakti16(0x0C000078);
-	printf("Set priority to source 30 %d \n",temp_prior);
-	set_shakti16(0x0C200000,2);
-	temp_prior = get_shakti16(0x0C200000);
-	printf("Set priority to source 30 %d \n",temp_prior);
-
 	isr_table[PLIC_INTERRUPT_30] = spi1_rx_interrupt;
+	
 	// Enable Global (PLIC) interrupts.
 	asm volatile("li	  t0, 8\t\n"
 			 "csrrs   zero, mstatus, t0\t\n"
@@ -269,17 +262,14 @@ int main()
 			 (retval)
 			);
 
-//	*spi0_intr_enable = 0x20;
 	*spi1_intr_enable = 0x80;
 
 
 	delay_loop(2000, 1000);
 
-//	int count = 0;
-//	while(count < 3)
 
-//	while(1)
-//	{
+	while(1)
+	{
 	
 			temp_data = 0x01;
 			for(i = 0; i < SSPI_SIZE; i++)
@@ -326,7 +316,7 @@ int main()
 				COMMCTRL_CS_OUTEN | COMMCTRL_TX_BITS(SSPI_SIZE * DATA_SIZE) | \
 				COMMCTRL_RX_BITS(SSPI_SIZE * DATA_SIZE) | COMMCTRL_COMM_MODE(3) | \
 				COMMCTRL_SPI_EN | COMMCTRL_MASTER_MODE));
-//			temp = spi_notbusy(0);
+
 			temp = spi_notbusy(1);
 
 //			printf("\n SSPI 0 Commn status: %x", *spi0_commstatus );
@@ -372,8 +362,8 @@ int main()
 //			printf("Read values from ADC \n");
 				delay_loop(2000, 1000);
 		
-//				count = count + 1;
-//			}
+
+			}
   return 0;
 }
 
