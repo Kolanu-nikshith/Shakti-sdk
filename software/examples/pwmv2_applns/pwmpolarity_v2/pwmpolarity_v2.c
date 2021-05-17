@@ -29,7 +29,7 @@ int main()
 	delay_loop(10000,10000);
 
 	log_info("\n\n=========== Without PWM_OUTPUT_POLARITY ===========");
-	pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE)); 
+	pwm_clr_control(PWM_0, PWM_OUTPUT_POLARITY); 
 	pwm_show_values(PWM_0);
 
 	delay_loop(10000,10000);

@@ -82,6 +82,24 @@ int pwm_set_control(int module_number, uint32_t value)
 	return 1;
 }
 
+/** @fn  pwm_clr_control
+ * @brief Function to set the control register of the selected pwm module
+ * @details This function will be called to set the value of the control register for the selected module
+ * @param[in] uint32_t (module_number- specifies the pwm smodule to be selected)
+ *            uint32_t (value - value to be set between 0x0000 to 0xffff.)
+ * @param[Out] uint32_t (returns 1 on success, 0 on failure.)
+ */
+int pwm_clr_control(int module_number, uint32_t value)
+{
+	pwm_instance[module_number]->control &= (~value & 0xffff);
+
+	log_debug("\n Control Register of module number %d clear to %x", module_number, value);
+	log_info("\n Control Register of module number %d clear to %x", module_number, value);
+
+	return 1;
+}
+
+
 /** @fn  pwm_set_deadband_delay
  * @brief Function to set the deadband delay register of the selected pwm module
  * @details This function will be called to set the value of the deadband_delay register for the selected module

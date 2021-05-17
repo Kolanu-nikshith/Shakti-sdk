@@ -7,8 +7,8 @@
 void handle_pwm_interrupt( uint32_t num)
 {
 	gpiov2_init();
-	gpiov2_instance->direction = 0xffff;
-	gpiov2_instance->toggle = 1;
+	gpiov2_instance->direction = 0x10000;
+	gpiov2_instance->toggle = 0x10000;
 
     pwm_set_control((6-num),0x80);
 	log_info("pwm interrupt handled\n");
@@ -95,7 +95,7 @@ int main()
 	pwm_show_values(PWM_0);
 #endif
 
-	/* Enable when halfperiod_interrupt interrupt */
+	/* Enable when halfperiod_interrupt  */
 #if 0
 	pwm_init();
     pwm_set_prescalar_value(PWM_0, 0xf2);

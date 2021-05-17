@@ -332,6 +332,9 @@ else
 ifeq ($(PROGRAM),1_second)
 filepath := clint_applns/1_second
 else
+ifeq ($(PROGRAM),min_max_second)
+filepath := clint_applns/min_max_second
+else
 ifeq ($(PROGRAM),gyro_softi2c)
 filepath := gpio_applns/gyro_softi2c
 else
@@ -436,6 +439,7 @@ filepath := sspi_applns/sspi_rx_overrun_interrupt
 else
 
 	@echo "Entry for $(PROGRAM) not present"
+endif
 endif
 endif
 endif
