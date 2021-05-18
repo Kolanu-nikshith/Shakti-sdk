@@ -1,10 +1,9 @@
 /***************************************************************************
 * Project               	        	:  shakti devt board
-* Name of the file	            	    :  pwmled.c
+* Name of the file	            	    :  pwmled_v2.c
 * Brief Description of file             :  example file for pwm led.
-* Name of Author    	                :  Abhinav Ramnath
-* Email ID                              :  abhinavramnath13@gmail.com
-
+* Name of Author    	                :  Soutrick Roy Chowdhury
+* Email ID                              :  soutrickofficial@gmail.com
  Copyright (C) 2019  IIT Madras. All rights reserved.
 
  This program is free software: you can redistribute it and/or modify
@@ -67,6 +66,7 @@ int main()
 	pwm_start(PWM_1);
 	pwm_set_control(PWM_1, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_1);
+	pwm_show_frequency(PWM_1, 5000, 10000);
 #endif
 #if 0
 	//Uncomment this for testing PWM 2
@@ -77,6 +77,7 @@ int main()
 	pwm_start(PWM_2);
 	pwm_set_control(PWM_2, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_2);
+	pwm_show_frequency(PWM_2, 5000, 10000);
 #endif
 #if 0
 	//Uncomment this for testing PWM 3
@@ -87,6 +88,7 @@ int main()
 	pwm_start(PWM_3);
 	pwm_set_control(PWM_3, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_3);
+	pwm_show_frequency(PWM_3, 5000, 10000);
 #endif	
 #if 0
 	//Uncomment this for testing PWM 4
@@ -97,6 +99,7 @@ int main()
 	pwm_start(PWM_4);
 	pwm_set_control(PWM_4, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_4);
+	pwm_show_frequency(PWM_3, 5000, 10000);
 #endif
 #if 1
 	//Uncomment this for testing PWM 5
@@ -107,6 +110,7 @@ int main()
 	pwm_start(PWM_5);
 	pwm_set_control(PWM_5, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_5);
+	pwm_show_frequency(PWM_5, 5000, 10000);
 #endif
 
 #if 0

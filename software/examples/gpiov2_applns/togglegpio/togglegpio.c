@@ -1,6 +1,6 @@
 /***************************************************************************
 * Project           		: shakti devt board
-* Name of the file	     	: tglgpio.c
+* Name of the file	     	: togglegpio.c
 * Brief Description of file     : Control an led with the help of a button, gpio based.
 * Name of Author    	        : Sathya Narayanan N
 * Email ID                      : sathya281@gmail.com

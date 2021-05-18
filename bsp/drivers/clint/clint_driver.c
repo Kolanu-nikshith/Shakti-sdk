@@ -31,6 +31,7 @@ interrupt handler, configure the counter and support for e and c class clint tim
 #include "log.h"
 #include "platform.h"
 #include "defines.h"
+#include "gpiov2.h"
 
 volatile uint64_t* mtime    =  (MTIME);
 volatile uint64_t* mtimecmp =  (MTIMECMP);
@@ -90,6 +91,9 @@ void configure_counter( uint64_t value)
 	log_debug("mtimecmp value = %d\n", *mtimecmp);
 	log_debug("mtime value = %d\n", *mtime);
 
+	log_info("mtimecmp value = %d\n", *mtimecmp);
+	log_info("mtime value = %d\n", *mtime);
+
 	log_trace("\nconfigure_counter exited\n");
 }
 
@@ -105,6 +109,10 @@ void mach_clint_handler( __attribute__((unused)) uintptr_t int_id,  __attribute_
 
 	//set mtimecmp to some value. On appln reqt basis handle timer interrupt
 	*mtimecmp = -1;
+
+	gpiov2_init();
+	gpiov2_instance->direction = 0x1;
+	gpiov2_instance->set = 0x1;
 
 	log_info("Timer interrupt handled \n");
 

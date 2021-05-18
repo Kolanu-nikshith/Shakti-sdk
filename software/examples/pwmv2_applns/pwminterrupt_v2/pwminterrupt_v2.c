@@ -29,7 +29,7 @@ int main()
 	*/
 	configure_interrupt(PLIC_INTERRUPT_6);
 
-	/* For checking PWM Interrupt by toggling gpio_0 pin */
+	/* For checking PWM Interrupt by toggling one board LED */
 	// isr_table[PLIC_INTERRUPT_6] = handle_pwm_interrupt;
 
 	/* For checking all the test case*/

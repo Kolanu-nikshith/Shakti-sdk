@@ -1,9 +1,9 @@
 /***************************************************************************
  * Project                     : shakti devt board
- * Name of the file	       : 1_second
+ * Name of the file	       	   : min_max_second
  * Brief Description of file   : Generating timer interrupt in 1 second
- * Name of Author    	       : Sathya Narayanan N & Raghav
- * Email ID                    : sathya281@gmail.com
+ * Name of Author    	       : Soutrick Roy Chowdhury
+ * Email ID                    : soutrickofficial@gmail.com
 
  Copyright (C) 2019  IIT Madras. All rights reserved.
 
@@ -35,8 +35,8 @@
 #include "clint_driver.h"
 #include "log.h"
 
-#define MAX 1
-#define MIN 0
+#define MAX 0
+#define MIN 1
 
 /** @fn int main(void)
  * @brief A simple application to use clint (mtime) and clint clock divisor to generate interrupt in 1 second. 
@@ -44,12 +44,14 @@
 void main(void){
 
 #if MAX
+	printf("Configuring 1 hour timer interrupt\n");
 	uint64_t value = ( CLOCK_FREQUENCY / CLINT_DIVISOR )*3600;
 	log_info("%d\n", value);
 #endif
 
 #if MIN
-	uint64_t value = ( CLOCK_FREQUENCY / CLINT_DIVISOR );
+	uint64_t value = ( CLOCK_FREQUENCY / CLINT_DIVISOR )/1000000000000;
+	log_info("%d\n", value);
 #endif
 	asm volatile("li      t0, 0x80\t\n"
 		     "csrrs   zero, mie, t0\t\n"
@@ -58,7 +60,6 @@ void main(void){
 	asm volatile("li      t0, 8\t\n"
 		     "csrrs   zero, mstatus, t0\t\n"
 		    );
-	printf("Configuring 1 second timer interrupt\n");
 	configure_counter(value);
 
 	while(1);

@@ -12,17 +12,26 @@ The readme is a brief overview on how pwm based interrupt.
     - Half Period Interrupt.
     - Interrupt when Output is disable.
 
-  * To get Active low or Active high:
-    - Set the intr_config reg 0xff for low and 0x00 for high
-    - To get the active low interrupt run the source code interrupt will come and to pause the      interrupt short the same GPIO pin as mentioned in the src code to VCC.
-    - To get the active high interrupt run the source code interrupt will come when you short the same GPIO pin as mentioned in the src code to VCC.
+  * To get Rise Interrupt:
+    - Make enable Rise Interrupt bits in the control register to get Rise Interrupt.
+    - Uncomment the the Rise Interrupt section in the src code to get the Interrupt.
 
-   * To get  Active high to low or Active low to high:
-   - Enable the macros as set in the src code
+  * To get Fall Interrupt:
+    - Make enable Fall Interrupt bits in the control register to get Fall Interrupt.
+    - Uncomment the the Fall Interrupt section in the src code to get the Interrupt.
+
+  * To get Half Period Interrupt:
+    - Make enable Half Period Interrupt bits in the control register to get Half Period Interrupt.
+    - Uncomment the the Half Period Interrupt section in the src code to get the Interrupt.
+
+  * To get Rise Interrupt with O/P disable:  
+    - Make enable Rise Interrupt bits and disable output bit in the control register to get Rise Interrupt.
+    - Uncomment the the Rise Interrupt with O/P disable section in the src code to get the Interrupt.
+    
 
 ### RESULTS
-  * Active high and low interrupt:
-    - When the interrupt will occur one board led will toggle.
+  * Set by the code, that board led will toggle when interrupt occurs. 
+  * Only interrupt will occur which can be seen through console window.
 
-  * Active low to high or Active high to low:
-    - Interrupt will switch from high to low and vice versa.  
+### Note
+  - All the interrupt in the src code checked through PWM_0 pins.

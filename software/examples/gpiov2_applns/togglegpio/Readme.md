@@ -8,8 +8,9 @@ The readme is a brief overview on gpio_toggle.
 	
 ### STEPS
   * Set GPIO direction register as OUT for this pin
-  * Set  corresponding bit GPIO toggle register for this pin
+  * Set corresponding bit GPIO toggle register for this pin or
+  * Set the bit and clear the bit with a certain delay then it will toggle.
 
 ### RESULTS
   * Led will toggle.
-
+  
