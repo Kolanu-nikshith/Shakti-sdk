@@ -7,10 +7,10 @@ The readme is a brief overview on how pwm based interrupt.
 
 ### STEPS
   ##### The different type of interrupt are:
-    - Rise Interrupt.
-    - Fall Interrupt.
-    - Half Period Interrupt.
-    - Interrupt when Output is disable.
+  - Rise Interrupt.
+  - Fall Interrupt.
+  - Half Period Interrupt.
+  - Interrupt when Output is disable.
 
   ##### To get Rise Interrupt:
     - Make enable Rise Interrupt bits in the control register to get Rise Interrupt.
