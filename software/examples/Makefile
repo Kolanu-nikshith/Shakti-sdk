@@ -437,8 +437,21 @@ else
 ifeq ($(PROGRAM),sspi_rx_overrun_interrupt)
 filepath := sspi_applns/sspi_rx_overrun_interrupt
 else
+ifeq ($(PROGRAM),sspiread)
+filepath := sspi_applns/sspiread
+else
+ifeq ($(PROGRAM),sspiwrite)
+filepath := sspi_applns/sspiwrite
+else
+ifeq ($(PROGRAM),sspierase)
+filepath := sspi_applns/sspierase
+else
+
 
 	@echo "Entry for $(PROGRAM) not present"
+endif
+endif
+endif
 endif
 endif
 endif

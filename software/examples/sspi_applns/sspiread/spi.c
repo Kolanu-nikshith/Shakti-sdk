@@ -24,10 +24,13 @@
   @file spi.c
   @brief read data from the flash by spi
   @detail Contains driver codes to read and write flash using SPI interface.
- */
-#include "spi.h"
+*/
+#include "stdio.h"
+#include "sspi.h"
 #include "uart.h"
 #include "utils.h"
+#include "log.h"
+
 
 /** @fn void main()
  * @brief Configures the SPI flash and reads the flash.
@@ -36,9 +39,8 @@
  */
 int main(void){
 
-	configure_spi(SPI0_OFFSET);
-
-	spi_init();
+	printf("SSPI FLASH READ\n");
+	sspi_init();
 	printf("SPI init done\n");
 	flash_device_id();
 	waitfor(200);
