@@ -440,7 +440,16 @@ else
 ifeq ($(PROGRAM),spansion_chk)
 filepath := sspi_applns/spansion_chk
 else
+ifeq ($(PROGRAM),sspi_master)
+filepath := sspi_applns/sspi_master
+else
+ifeq ($(PROGRAM),sspi_slave)
+filepath := sspi_applns/sspi_slave
+else
+
 	@echo "Entry for $(PROGRAM) not present"
+endif
+endif
 endif
 endif
 endif
