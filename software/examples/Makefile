@@ -162,8 +162,7 @@ do:
 ifeq ($(PROGRAM),all)
 	cd ./i2c_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./uart_applns && $(MAKE) all TARGET=$(TARGET)
-	cd ./uart_testcases && $(MAKE) all TARGET=$(TARGET)
-	cd ./plic_applns && $(MAKE) all TARGET=$(TARGET)Z
+	# cd ./plic_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./clint_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./malloc_test && $(MAKE) all TARGET=$(TARGET)
 	cd ./xadc_applns && $(MAKE) all TARGET=$(TARGET)
@@ -172,11 +171,12 @@ ifeq ($(TARGET),sos)
 	cd ./gpiov2_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./pwmv2_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./sspi_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./uart_testcases && $(MAKE) all TARGET=$(TARGET)
 else
 	cd ./gpio_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./pwm_applns && $(MAKE) all TARGET=$(TARGET)
 	cd ./spi_applns && $(MAKE) all TARGET=$(TARGET)
-	# cd ./plic_applns && $(MAKE) all TARGET=$(TARGET)
+	cd ./plic_applns && $(MAKE) all TARGET=$(TARGET)
 endif
 else
 ifeq ($(PROGRAM),loopback)

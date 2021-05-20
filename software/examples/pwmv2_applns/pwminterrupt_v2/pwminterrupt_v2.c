@@ -76,13 +76,13 @@ int main()
 
     check_pwmv2();
 	/* Enable when need rise interrupt */
-#if 0	
+#if 1	
 	pwm_init();
     pwm_set_prescalar_value(PWM_0, 0xf2);
  	pwm_configure(PWM_0, 0xff, 0x01, rise_interrupt, 0x1, false);
     pwm_start(PWM_0);
-    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
+    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 #endif
 
 	/* Enable when fall interrupt */
@@ -91,8 +91,8 @@ int main()
     pwm_set_prescalar_value(PWM_0, 0xf2);
  	pwm_configure(PWM_0, 0xff, 80, fall_interrupt, 0x1, false);
     pwm_start(PWM_0);
-    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_FALL_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
+    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_FALL_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 #endif
 
 	/* Enable when halfperiod_interrupt  */
@@ -101,18 +101,20 @@ int main()
     pwm_set_prescalar_value(PWM_0, 0xf2);
  	pwm_configure(PWM_0, 0xff, 80, halfperiod_interrupt, 0x1, false);
     pwm_start(PWM_0);
-    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_HALFPERIOD_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
+    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE |PWM_OUTPUT_ENABLE | PWM_HALFPERIOD_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 #endif
 
 	/* Uncomment for checking Output Disable with PWM Interrupt */
-#if 1
+#if 0
 	pwm_init();
     pwm_set_prescalar_value(PWM_0, 0xf2);
  	pwm_configure(PWM_0, 0xff, 0x01, rise_interrupt, 0x1, false);
     pwm_start(PWM_0);
-    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 	pwm_show_values(PWM_0);
+    pwm_set_control(PWM_0, (PWM_ENABLE | PWM_UPDATE_ENABLE | PWM_RISE_INTERRUPT_ENABLE | PWM_OUTPUT_POLARITY ));
 #endif
+
+	while(1);
     return 0;
 }

@@ -77,7 +77,6 @@ int pwm_set_control(int module_number, uint32_t value)
 	pwm_instance[module_number]->control |= value;
 
 	log_debug("\n Control Register of module number %d set to %x", module_number, value);
-	log_info("\n Control Register of module number %d set to %x", module_number, value);
 
 	return 1;
 }

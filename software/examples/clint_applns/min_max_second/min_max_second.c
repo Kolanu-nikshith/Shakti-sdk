@@ -35,23 +35,26 @@
 #include "clint_driver.h"
 #include "log.h"
 
-#define MAX 0
-#define MIN 1
+
+#define MAX 1
+#define MIN 0
 
 /** @fn int main(void)
- * @brief A simple application to use clint (mtime) and clint clock divisor to generate interrupt in 1 second. 
+ * @brief A simple application to use clint (mtime) and clint clock divisor to generate interrupt in max and min. 
  */
 void main(void){
 
 #if MAX
-	printf("Configuring 1 hour timer interrupt\n");
-	uint64_t value = ( CLOCK_FREQUENCY / CLINT_DIVISOR )*3600;
-	log_info("%d\n", value);
+	printf("Configuring 3 hours timer interrupt\n");
+	uint64_t value = ( CLOCK_FREQUENCY / CLINT_DIVISOR )*10800;
+	log_info("Passing Value: %d\n", value);
+
 #endif
 
 #if MIN
-	uint64_t value = ( CLOCK_FREQUENCY / CLINT_DIVISOR )/1000000000000;
-	log_info("%d\n", value);
+	uint64_t value = 0; 
+	// uint64_t value = ( CLOCK_FREQUENCY / CLINT_DIVISOR );
+	log_info("Passing Value: %d\n", value);
 #endif
 	asm volatile("li      t0, 0x80\t\n"
 		     "csrrs   zero, mie, t0\t\n"

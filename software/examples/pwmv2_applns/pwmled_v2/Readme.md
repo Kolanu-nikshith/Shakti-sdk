@@ -8,7 +8,8 @@ The readme is a brief overview on pwm pins.
   * Test components:led
 	
 ### STEPS
-  * Uncomment the line you want to check the which pwm pins you want to check.
+  * Connect the LED to the particular pins you want to check.
+  * Uncomment the line you want to check on the particular pwm pins.
 
 ### RESULTS
   * Led will toggle.
