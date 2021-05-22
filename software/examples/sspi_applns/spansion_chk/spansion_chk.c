@@ -32,8 +32,9 @@ protocol.
 #include "sspi.h"
 #include "uart.h"
 
-#define  WRITE_SIZE 256
-#define  READ_SIZE 256
+#define  WRITE_SIZE 10
+#define  READ_SIZE 10
+#define FLASH_BASE_ADDRESS 0x00b00000
 
 /** @fn static void flash_read_locations(uint32_t read_address, uint16_t length)
  * @brief Reads the flash memory contents starting from read_address.
@@ -73,18 +74,19 @@ static void flash_read_locations(uint32_t read_address, uint32_t length, int *re
  */
 void main()
 {
-	int write_address = 0x00b00004;  // read/write from/to this address
-	int read_address  = 0x00b00004;  // read/write from/to this address
+	int write_address = FLASH_BASE_ADDRESS;  // read/write from/to this address
+	int read_address  = FLASH_BASE_ADDRESS;  // read/write from/to this address
 	int data = 0xDEADBEEF; //32 bits of data can be written at a time
 	uint32_t length = 11;
 
 	sspi_init();
-
+	flash_init();
 	printf("SPI init done\n");
 
 	flash_device_id();
 	waitfor(200);
-	flash_erase(0x0b000000); //erases an entire sector
+	printf("\n Flash device id read complete");
+	flash_erase(FLASH_BASE_ADDRESS); //erases an entire sector
 	printf("\nErase complete");
 
 #if 0
@@ -109,22 +111,26 @@ void main()
 	printf("\n After Write");
 	flash_read_locations(read_address, length);
 #else
-	
-	length = WRITE_SIZE;
 	int write_data[WRITE_SIZE] = {0};
 	int read_data[READ_SIZE] = {0};
-	data = 0x0;
-	for(int i = 0; i < length; i++)
-	{
-		flash_write( write_address + 0x04, data);
-		write_data[i] = data;
-		data += 0x01010101;
-	}
+	printf("\n Data read after erase:")	;
 	length = READ_SIZE;
-	for(int i = 0; i < length; i++)
+//	for(int i = 0; i < length; i++)
 	{
 		flash_read_locations( read_address, length, &read_data);
 	}
+//	while(1);
+	length = WRITE_SIZE;
+	data = 0x0;
+	for(int i = 0; i < length; i++)
+	{
+		flash_write( write_address, data);
+		write_data[i] = data;
+		data += 0x01010101;
+		write_address += 0x04;
+	}
+	length = READ_SIZE;
+		flash_read_locations( read_address, length, &read_data);
 
 	for(int i = 0; i < length; i++)
 	{

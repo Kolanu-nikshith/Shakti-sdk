@@ -30,6 +30,7 @@
 
 #define SSPI_DRIVER  1
 #include "sspi.h"
+#include "platform.h"
 #include "log.h"
 
 
@@ -43,7 +44,11 @@
  */
 void sspi_init()
 {
-		sspi_instance = (sspi_struct*) (SSPI0_BASE_ADDRESS );
+    for(int i = 0; i < SSPI_MAX_COUNT; i++)
+    {
+		sspi_instance[i] = (sspi_struct*) ( (SSPI0_BASE_ADDRESS + ( i * SSPI_BASE_OFFSET) ) );
+        printf("sspi_instance[%x]: %x", i, sspi_instance[i]);
+    }
 }
 
 
@@ -476,7 +481,7 @@ void sspi_transmit_data(sspi_struct *sspi_instance, uint32_t*buf_data, uint8_t b
     while(buf_length != 0) {
         if(comm_status & SPI_TXE) {
             sspi_instance -> data_tx = *buf_data;
-			sspi_enable_txrx(SSPI0, ENABLE);
+			sspi_enable_txrx(sspi_instance, ENABLE);
 	    printf("\n Send data : %x", sspi_instance -> data_tx);
             buf_length --;
         }
@@ -551,24 +556,45 @@ void sspi_configure_qualification(sspi_struct *sspi_instance, uint8_t qual_cycle
 }
 
 
+#ifdef INTERRUPT
+/** @fn void sspi_isr()
+ * @brief Interrupt service routine for SSPI peripheral
+ * @details This functions will be called to ofer interrupt service routine for SSPI0
+ */
+void sspi0_isr_handler()
+{
+//    sspi_struct *sspi_instance = sspi_instance[0];
+
+    uint32_t comm_status  = sspi_instance[0] -> comm_status;
+
+    if(comm_status & SPI_TXE) {
+        sspi_instance[0] -> data_tx = buf_data;
+        buf_length --;
+    }
+    else if(comm_status & SPI_RXNE) {
+        buf_data = sspi_instance[0] -> data_rx;
+        buf_length ++;
+    }
+}
+
 
 /** @fn void sspi_isr()
  * @brief Interrupt service routine for SSPI peripheral
  * @details This functions will be called to ofer interrupt service routine for SSPI0
  */
-void sspi_isr_handler()
+void sspi1_isr_handler()
 {
-    sspi_struct *sspi_instance = SSPI0;
+//    sspi_struct *sspi_instance = sspi_instance[1];
 
-    uint32_t comm_status  = sspi_instance -> comm_status;
+    uint32_t comm_status  = sspi_instance[1] -> comm_status;
 
     if(comm_status & SPI_TXE) {
-        sspi_instance -> data_tx = buf_data;
+        sspi_instance[1] -> data_tx = buf_data;
         buf_length --;
     }
     else if(comm_status & SPI_RXNE) {
-        buf_data = sspi_instance -> data_rx;
+        buf_data = sspi_instance[1] -> data_rx;
         buf_length ++;
     }
 }
-
+#endif

@@ -31,8 +31,4 @@
 
 volatile unsigned int* pinmux_config_reg = PINMUX_CONFIGURE_REG;
 
-#define PINMUX_CONFIG_1 
-#define PINMUX_CONFIG_2 
-#define PINMUX_CONFIG_3
-
 #endif

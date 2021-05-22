@@ -32,14 +32,6 @@
 #include "platform.h"
 #include "log.h"
 
-/* Struct to access SSPI registers as 32 bit registers */
-
-#define SSPI0_BASE_ADDRESS  0x00020000 /*! Standard Serial Peripheral Interface 0 Base address*/
-//#define SSPI0_BASE_ADDRESS  0x00020100 /*! Standard Serial Peripheral Interface 0 Base address*/
-
-
-
-#define SSPI_MAX_COUNT  1 /*! Number of Standard SSPI used in the SOC */
 
 typedef struct 
 {
@@ -66,21 +58,20 @@ typedef struct
 
 #ifdef SSPI_DRIVER 
 /* Mapping SSPI0 Base address to the struct instance of SSPI0 */
-sspi_struct *SSPI0 = (sspi_struct *) SSPI0_BASE_ADDRESS;
+sspi_struct *sspi_instance[SSPI_MAX_COUNT];
 #else
 // /* Mapping SSPI0 Base address to the struct instance of SSPI0 */
-extern sspi_struct *SSPI0;
+extern sspi_struct *sspi_instance[];
+
 #endif
 
 /* Declaring the buffer variables to be used in ISR */
 #ifdef SSPI_DRIVER
 uint32_t buf_length =0;
 uint32_t buf_data =0;; 
-sspi_struct *sspi_instance;
 #else
 extern uint32_t buf_length;
 extern uint32_t buf_data; 
-extern sspi_struct *sspi_instance;
 #endif
 
 /*! SSPIx Communication Control Register */

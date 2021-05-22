@@ -29,18 +29,52 @@
 #include "sspi.h"
 #include "uart.h"
 #include "utils.h"
-#include "pinmux.h"
+
+//#define DISABLE_CS 1
 
 #define SSPI_DRIVER     1
 
- 
+#define FLASH_WRITE_COMMAND 0x12
+#define FLASH_FAST_READ_COMMAND 0x0C
+#define FLASH_ERASE_COMMAND 0xDC
+#define FLASH_READ_DEVICE_ID 0x9F
+#define FLASH_READ_SR 0x05
+#define FLASH_WRITE_SR 0x06
+#define FLASH_WRITE_ENABLE 0x06
+#define FLASH_NORMAL_READ_COMMAND 0x13
+
+
+#define SSPI_INSTANCE 0
+
+
+//sspi_struct *SSPI0 = (sspi_struct *) SSPI0_BASE_ADDRESS;
+
+void flash_init()
+{
+ 	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], DISABLE);
+	sspi_configure_clock_in_hz(sspi_instance[SSPI_INSTANCE], 1000000); /* Currently configuring for 100kHz, as the maximum clock is 20MHz */
+	sspi_configure_clock_pol(sspi_instance[SSPI_INSTANCE], 1);
+	sspi_configure_clock_phase(sspi_instance[SSPI_INSTANCE], 1);	
+	sspi_configure_pins(sspi_instance[SSPI_INSTANCE], 1, 0 ,  1 , 1);
+	sspi_configure_mas_slv(sspi_instance[SSPI_INSTANCE], SPI_MASTER);
+	sspi_configure_lsb_first(sspi_instance[SSPI_INSTANCE], MSB_FIRST);
+//	sspi_configure_tx_setup_time(sspi_instance[SSPI_INSTANCE], 1);
+//	sspi_configure_tx_hold_time(sspi_instance[SSPI_INSTANCE], 0);
+}
+
 int flash_write_enable(void)
 {
- 	sspi_configure_tx_rx_length(SSPI0,8,0);//Tx - 8, Rx - 0;
-	sspi_configure_comm_mode(SSPI0,SIMPLEX_TX);
-	SSPI0->data_tx = 6;	//MSB byte of address.
- 	sspi_enable_txrx(SSPI0, ENABLE);
+#ifdef DISABLE_CS
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], DISABLE);
+#endif
+//	sspi_configure_tx_setup_time(sspi_instance[SSPI_INSTANCE], 2);
+//	sspi_configure_tx_hold_time(sspi_instance[SSPI_INSTANCE], 2);
+ 	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE],8,0);//Tx - 8, Rx - 0;
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], SIMPLEX_TX);
+	sspi_instance[SSPI_INSTANCE]->data_tx = FLASH_WRITE_ENABLE;	//MSB byte of address.
+ 	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
  	sspi_notbusy();
+	 log_debug("\n Flash write enabled");
  	return 1;
 }
 
@@ -49,33 +83,28 @@ int sspi_notbusy(void)
 	unsigned char  read_data = 0x01;
 	while(read_data & 0x01){
 		waitfor(10);
-		read_data = SSPI0->comm_status;
-//		printf("\n Status Register: %x", read_data);
+		read_data = sspi_instance[SSPI_INSTANCE]->comm_status;
+//		read_data = SSPI0->comm_status;
+		log_debug("\n Status Register: %x", read_data);
 	}
-//	printf("\n SPI comm done \n");
+	log_debug("\n SPI comm done \n");
 	return 1;
 }
 
 
 char flash_cmd_read(char command)
 {
-//	int dr5;
-//	set_spi(spi_dr1, command);
-//	set_spi(spi_dr5, command);
-//	spi_tx_rx_start();
-//	set_spi(spi_cr1, (SPI_BR(7)|SPI_TOTAL_BITS_TX(8)|SPI_TOTAL_BITS_RX(32)|SPI_SPE|SPI_CPHA|SPI_CPOL));
-//	if(spi_rxne_enable()) {
-//		dr5 = *spi_dr5;
-//	}
-//	return dr5;
-
 	char recvDATA;
-	SSPI0->data_tx =command;
-	sspi_configure_tx_rx_length(SSPI0,8,8);
-	sspi_configure_comm_mode(SSPI0,HALF_DUPLEX);
-	sspi_enable_txrx(SSPI0, ENABLE);
+#ifdef DISABLE_CS
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], DISABLE);
+#endif
+//	sspi_configure_tx_hold_time(sspi_instance[SSPI_INSTANCE], 2);
+	sspi_instance[SSPI_INSTANCE]->data_tx = command;
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 8, 8);
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], HALF_DUPLEX);
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
 	sspi_notbusy();	
-	recvDATA = SSPI0->data_rx;
+	recvDATA = sspi_instance[SSPI_INSTANCE]->data_rx;
 	return recvDATA;
 }
 
@@ -83,10 +112,11 @@ int flash_status_register_read(void)
 {
 	char stat = 0x3;
 
-	while (stat & 0x03)
+	while (stat & 0x01)
 	{
-		stat = flash_cmd_read(0x05);
+		stat = flash_cmd_read(FLASH_READ_SR);
 		log_debug("flash status register val %x\n", stat);
+		printf("flash status register val %x\n", stat);
 	}
 
 	return 0;
@@ -105,92 +135,31 @@ int flash_status_register_read(void)
 int flash_cmd_addr(int command, int addr)
 {
 
-	SSPI0->data_tx =command;	//Do not shift  command when passing as argument.
-	SSPI0->data_tx =(addr >> 24);	//MSB byte of address.
-	SSPI0->data_tx =(addr >> 16);	//2nd byte of address.
-	SSPI0->data_tx =(addr >> 8);	//3rd byte of address.
-	SSPI0->data_tx =(addr >> 0);	//4th byte of address.
-	sspi_configure_tx_rx_length(SSPI0,40,0);//Tx - 8, Rx - 0;
-	sspi_configure_comm_mode(SSPI0,SIMPLEX_TX);
-	sspi_enable_txrx(SSPI0, ENABLE);
+	sspi_instance[SSPI_INSTANCE]->data_tx =command;	//Do not shift  command when passing as argument.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(addr >> 24);	//MSB byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(addr >> 16);	//2nd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(addr >> 8);	//3rd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(addr >> 0);	//4th byte of address.
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 40, 0);//Tx - 40, Rx - 0;
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], SIMPLEX_TX);
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
 	waitfor(20);
 	sspi_notbusy();
-
+	log_debug("\n Flash Erase command is sent");
 	return 1;
 }
 
 void flash_erase(int address)
 {
+#ifdef DISABLE_CS
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], DISABLE);
+#endif
 	flash_write_enable();
 	flash_cmd_addr(0xdc, address);
 	flash_status_register_read();
+	log_debug("\n Flash erase is done");
 }
 
-
-/**
- * @fn void flash_cmd_addr_data(int command, int addr, int data)
- * @brief useful for function like Write 
- * @details use for sending 8bit command +32bit of write address + 32 bit of write data
- * @warning to move data from data register to fifo there must be some data into spi_dr5
- * @param int (command (opcode))
- * @param int (addr(address after the opcode))
- * @param int (data (data after the address))
- */
-void flash_cmd_addr_data(int command, int addr, int data)
-{
-	SSPI0->data_tx =command;	//Do not shift  command when passing as argument.
-	SSPI0->data_tx =(addr >> 24);	//MSB byte of address.
-	SSPI0->data_tx =(addr >> 16);	//2nd byte of address.
-	SSPI0->data_tx =(addr >> 8);	//3rd byte of address.
-	SSPI0->data_tx =(addr >> 0);	//4th byte of address.
-	SSPI0->data_tx =(data >> 24);	//4th byte of data.
-	SSPI0->data_tx =(data >> 16);	//4th byte of data.
-	SSPI0->data_tx =(data >> 8);	//4th byte of data.
-	SSPI0->data_tx =(data >> 0);	//4th byte of data.
-	sspi_configure_tx_rx_length(SSPI0,72,0);//Tx - 72, Rx - 0;
-	sspi_configure_comm_mode(SSPI0,SIMPLEX_TX);
-	sspi_enable_txrx(SSPI0, ENABLE);
-	sspi_notbusy();
-	flash_status_register_read();
-}
-
-
-void flash_write(int address, int data)
-{
-	flash_write_enable();
-	flash_cmd_addr_data(0x12, address, data);
-	flash_status_register_read();
-}
-
-/**
- * @fn int flash_cmd_to_read(int command, int addr)
- * @briefUse useful for function like read
- * @details for sending command of 8bit + read address of 32bit + 8bit of dummy cycle and receive 
- *          32bit value from flash 
- * @warning As receive shoild start as soon as transmit state end, use spi_rx_tx_start() Before 
- *          setting control register 1
- * @param int (command (opcode))
- * @param int (addr(read_address))
- * @return int 
- */
-int flash_cmd_to_read(int command, int addr)
-{
-	int recv_data = 0;
-	SSPI0->data_tx =command;	//Do not shift  command when passing as argument.
-	SSPI0->data_tx =(addr >> 24);	//MSB byte of address.
-	SSPI0->data_tx =(addr >> 16);	//2nd byte of address.
-	SSPI0->data_tx =(addr >> 8);	//3rd byte of address.
-	SSPI0->data_tx =(addr >> 0);	//4th byte of address.
-	sspi_configure_tx_rx_length(SSPI0,48,32);//Tx - 8, Rx - 0;
-	sspi_configure_comm_mode(SSPI0,HALF_DUPLEX);
-	sspi_enable_txrx(SSPI0, ENABLE);
-	sspi_notbusy();
-	// printf("\nrecv data 1");
-	// recvData = SSPI0->data_rx;
-	printf("\nrecv data 2");
-	recv_data = (SSPI0->data_rx << 24) | (SSPI0->data_rx << 16) | (SSPI0->data_rx << 8 ) | (SSPI0->data_rx );
-	return recv_data;
-}
 
 /**
  * @fn void flash_write(int address, int data)
@@ -200,28 +169,146 @@ int flash_cmd_to_read(int command, int addr)
  * @param int (addres (write address))
  * @param int(data (write data))
  */
+void flash_write(int address, int data)
+{
+	printf("\n Write data %x at address %x", data, address);
+#ifdef DISABLE_CS
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], DISABLE);
+#endif
+	flash_write_enable();
+	sspi_instance[SSPI_INSTANCE]->data_tx = FLASH_WRITE_COMMAND;	//Do not shift  command when passing as argument.
+	sspi_instance[SSPI_INSTANCE]->data_tx = (address >> 24);	//MSB byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = (address >> 16);	//2nd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = (address >> 8);	//3rd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = (address >> 0);	//4th byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = (data >> 24);	//4th byte of data.
+	sspi_instance[SSPI_INSTANCE]->data_tx = (data >> 16);	//4th byte of data.
+	sspi_instance[SSPI_INSTANCE]->data_tx = (data >> 8);	//4th byte of data.
+	sspi_instance[SSPI_INSTANCE]->data_tx = (data >> 0);	//4th byte of data.
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 72, 0);//Tx - 72, Rx - 0;
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], SIMPLEX_TX);
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
+#ifdef SHOW_REG
+	sspi_read_registers(sspi_instance[SSPI_INSTANCE]);
+#endif	
+	sspi_notbusy();
+	flash_status_register_read();
+	log_debug("\n Flash data is written");
+}
 
+/** @fn int flash_read(int address)
+ * @brief read the 4bytes data from given address 
+ * @details flash_cmd_to_read with opcode 0Bh for fast read
+ * @param int (address (read address))
+ * @return int 
+ */
 int flash_read(int address)
 {
-	int read_value = flash_cmd_to_read(0x0C,address);
-	return read_value;
+	int recv_data = 0;
+	char read_data[4] = {'\0'};
+#ifdef DISABLE_CS
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], DISABLE);
+#endif
+#ifdef FAST_READ
+	sspi_instance[SSPI_INSTANCE]->data_tx =FLASH_FAST_READ_COMMAND;	//Do not shift  command when passing as argument.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(address >> 24);	//MSB byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(address >> 16);	//2nd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(address >> 8);	//3rd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(address >> 0);	//4th byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0xFF;	//Dummy byte.
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 48, 32);//Tx - 48, Rx - 32;
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], HALF_DUPLEX);
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
+#endif
+#ifdef NORMAL_READ
+	sspi_instance[SSPI_INSTANCE]->data_tx =FLASH_NORMAL_READ_COMMAND;	//Do not shift  command when passing as argument.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(address >> 24);	//MSB byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(address >> 16);	//2nd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(address >> 8);	//3rd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx =(address >> 0);	//4th byte of address.
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 72, 72);//Tx - 48, Rx - 32;
+//	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], HALF_DUPLEX);
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], FULL_DUPLEX);
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
+#endif
+
+#ifdef SHOW_REG
+	sspi_read_registers(sspi_instance[SSPI_INSTANCE]);
+#endif	
+	sspi_notbusy();
+	read_data[0] = sspi_instance[SSPI_INSTANCE]->data_rx;
+	read_data[1] = sspi_instance[SSPI_INSTANCE]->data_rx;
+	read_data[2] = sspi_instance[SSPI_INSTANCE]->data_rx;
+	read_data[3] = sspi_instance[SSPI_INSTANCE]->data_rx;
+	recv_data = ( (read_data[0] << 24) | (read_data[1] << 16) | (read_data[2] << 8) | (read_data[0] << 0) );
+	printf("\n d[0]: %x; d[1]: %x;  d[2]: %x;  d[4]: %x; recv_data: %x", read_data[0], read_data[1], read_data[2], read_data[3], recv_data) ;
+	return recv_data;
 }
 
 
-
+#if 1
 int flash_device_id(void)
 {
 
 	uint32_t recvData;
-	SSPI0->data_tx =0x9f;		
-	sspi_configure_tx_rx_length(SSPI0,8,24);//Tx - 8, Rx - 0;
-	sspi_configure_comm_mode(SSPI0,HALF_DUPLEX);
-	sspi_read_registers(SSPI0);
-	sspi_enable_txrx(SSPI0, ENABLE);
+	flash_write_enable();
+#ifdef DISABLE_CS
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], DISABLE);
+#endif
+#ifdef SHOW_REG
+	sspi_read_registers(sspi_instance[SSPI_INSTANCE]);
+#endif	
+	sspi_instance[SSPI_INSTANCE]->data_tx = FLASH_READ_DEVICE_ID;		
+	sspi_configure_tx_setup_time(sspi_instance[SSPI_INSTANCE],  0);
+	sspi_configure_tx_hold_time(sspi_instance[SSPI_INSTANCE], 0);
+#if 1
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 8, 24);//Tx - 8, Rx - 24;
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], HALF_DUPLEX);
+#ifdef SHOW_REG
+	sspi_read_registers(sspi_instance[SSPI_INSTANCE]);
+#endif	
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
 	sspi_notbusy();
+
+#else
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 8, 0);//Tx - 8, Rx - 24;
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], SIMPLEX_TX);
+	sspi_read_registers(sspi_instance[SSPI_INSTANCE]);
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
+	sspi_notbusy();
+
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 0, 24);//Tx - 8, Rx - 24;
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], SIMPLEX_TX);
+	sspi_read_registers(sspi_instance[SSPI_INSTANCE]);
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
+	sspi_notbusy();
+#endif
+
 	printf("\nrecv data 2");
-	recvData = (SSPI0->data_rx << 16) | (SSPI0->data_rx << 8 ) | (SSPI0->data_rx );
+	recvData = (sspi_instance[SSPI_INSTANCE]->data_rx << 16) | \
+	(sspi_instance[SSPI_INSTANCE]->data_rx << 8 ) | (sspi_instance[SSPI_INSTANCE]->data_rx );
+	printf("\n Device id is %x", recvData);
 	return recvData;	
 }
+#else
+int flash_device_id(void)
+{
 
-
+	uint32_t recvData;
+	sspi_init();
+	sspi_configure_mas_slv(SSPI0,MASTER);
+	sspi_configure_pins(SSPI0, ENABLE, DISABLE, ENABLE,ENABLE); //MOSI, MISO, CLK, NS
+	sspi_configure_lsb_first(SSPI0, MSB_FIRST);
+	sspi_configure_clock_in_hz(SSPI0, 10000); /* Currently configuring for 100kHz, as the maximum clock is 20MHz */
+	sspi_configure_clock_pol(SSPI0, 1);
+	sspi_configure_clock_phase(SSPI0, 1);	
+	sspi_configure_comm_mode(SSPI0,HALF_DUPLEX);
+	sspi_read_registers(SSPI0);
+	sspi_configure_tx_rx_length(SSPI0,8,24);//Tx - 8, Rx - 0;
+	sspi_enable_txrx(SSPI0, ENABLE);
+	sspi_read_registers(SSPI0);
+	sspi_notbusy();
+	recvData = (SSPI0->data_rx << 24)  | (SSPI0->data_rx << 16) | (SSPI0->data_rx << 8 ) | (SSPI0->data_rx );
+	printf("\nRECEIVED DATA %x",recvData);
+}
+#endif
