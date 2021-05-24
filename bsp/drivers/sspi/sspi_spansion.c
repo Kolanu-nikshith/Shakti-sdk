@@ -33,7 +33,7 @@
 //#define DISABLE_CS 1
 
 #define SSPI_DRIVER     1
-
+#define FAST_READ 1
 #define FLASH_WRITE_COMMAND 0x12
 #define FLASH_FAST_READ_COMMAND 0x0C
 #define FLASH_ERASE_COMMAND 0xDC
