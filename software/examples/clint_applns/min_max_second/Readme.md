@@ -17,4 +17,4 @@ The readme is a brief overview on minimum and maximum period after interrupt occ
 
 
 ## NOTE:
-  - MAX time tested for 5 hour
+  - MAX time tested for 3 hours

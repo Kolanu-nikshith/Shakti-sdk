@@ -67,23 +67,17 @@ void gpiov2_write_word(int *addr, unsigned long val) {
         *addr = val;
 }
 
+/** @fn void gpiov2_set_direction(unsigned long gpio_pin,int direction)
+ * @brief  writes a value to an direction register
+ * @details
+ * @param gpio_pin set the pin number you want to work with
+ * @param direction pin will set and made to work
+ */
 void gpiov2_set_direction(unsigned long gpio_pin,int direction) {
-#ifdef NORMAL
-	if (direction == GPIO_OUT)
-		gpio_write_word(GPIO_DIRECTION_CNTRL_REG,
-				(gpio_read_word(GPIO_DIRECTION_CNTRL_REG) |
-				 gpio_pin ));
-	else
-		gpio_write_word(GPIO_DIRECTION_CNTRL_REG,
-				(gpio_read_word(GPIO_DIRECTION_CNTRL_REG) &
-				 ~(gpio_pin) ));
-#else
 	if (direction == GPIO_OUT)
 		gpiov2_instance->direction |= gpio_pin;
 	else
 		gpiov2_instance->direction &= (~(gpio_pin));
-	
-#endif
 }
 
 /**
@@ -92,13 +86,8 @@ void gpiov2_set_direction(unsigned long gpio_pin,int direction) {
  * @param pinNo GPIO pin number which has to be set
  */
 void gpiov2_set(unsigned long pinNo) {
-#ifdef NORMAL
-	gpio_write_word(GPIO_SET_REG, pinNo);
-	gpio_write_word(GPIO_SET_REG, 0);
-#else
 	gpiov2_instance->set |= pinNo;
 	gpiov2_instance->set|= 0;
-#endif
 }
 
 
@@ -107,13 +96,8 @@ void gpiov2_set(unsigned long pinNo) {
  * @param pinNo GPIO pin which has to be cleared
  */
 void gpiov2_clear(unsigned long pinNo) {
-#ifdef NORMAL
-	gpio_write_word(GPIO_CLEAR_REG, pinNo);
-	gpio_write_word(GPIO_CLEAR_REG, 0);
-#else
 		gpiov2_instance->clear |= pinNo;
 		gpiov2_instance->clear = 0;
-#endif
 }
 
 
@@ -123,13 +107,8 @@ void gpiov2_clear(unsigned long pinNo) {
  * @param pinNo GPIO pin which has to be toggled
  */
 void gpiov2_toggle(unsigned long pinNo) {
-#ifdef NORMAL
-    gpio_write_word(GPIO_TOGGLE_REG,pinNo);
-    gpio_write_word(GPIO_TOGGLE_REG, 0);
-#else
 		gpiov2_instance->toggle |= pinNo;
 		gpiov2_instance->toggle= 0;
-#endif
 }
 
 
@@ -142,17 +121,10 @@ void gpiov2_toggle(unsigned long pinNo) {
  * @param toggleInterrupt
 */
 void gpiov2_interrupt_config(unsigned long pinNo, int low_ena) {
-#ifdef NORMAL
-	if (low_ena == 1)
-		gpio_write_word(GPIO_INTERRUPT_CONFIG_REG, (gpio_read_word(GPIO_INTERRUPT_CONFIG_REG) | pinNo ));
-	else
-		gpio_write_word(GPIO_INTERRUPT_CONFIG_REG, (gpio_read_word(GPIO_INTERRUPT_CONFIG_REG) & ~(pinNo) ));
-#else
 	if(low_ena )
 		gpiov2_instance->intr_config |= pinNo;
 	else
 		gpiov2_instance->intr_config &= ~(pinNo);
-#endif
 }
 
 /**
@@ -164,11 +136,7 @@ void gpiov2_interrupt_config(unsigned long pinNo, int low_ena) {
 void gpiov2_set_qualification_cycles(unsigned int cycles) {
 	if (cycles > GPIO_QUAL_MAX_CYCLES)
 		cycles = GPIO_QUAL_MAX_CYCLES;
-#ifdef NORMAL
-	gpio_write_word(GPIO_QUAL_REG,cycles);
-#else
 		gpiov2_instance->qualification|= cycles;
-#endif
 }
 
 
@@ -177,11 +145,7 @@ void gpiov2_set_qualification_cycles(unsigned int cycles) {
  * @return value strored in the data register
  */
 long int gpiov2_read_data_register() {
-#ifdef NORMAL
-    return gpio_read_word(GPIO_DATA_REG);
-#else
 		return gpiov2_instance->data;
-#endif
 }
 
 /** @fn void gpio_write_data_register()
@@ -189,10 +153,6 @@ long int gpiov2_read_data_register() {
  * @return Nil
  */
 void gpiov2_write_data_register(unsigned long data_word) {
-#ifdef NORMAL
-	gpio_write_word(GPIO_DATA_REG, data_word);
-#else
 	gpiov2_instance->data = data_word;
-#endif
 }
 

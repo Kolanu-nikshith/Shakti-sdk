@@ -82,8 +82,8 @@ int pwm_set_control(int module_number, uint32_t value)
 }
 
 /** @fn  pwm_clr_control
- * @brief Function to set the control register of the selected pwm module
- * @details This function will be called to set the value of the control register for the selected module
+ * @brief Function to clear the control register of the selected pwm module
+ * @details This function will be called to clear the bits from the control register for the selected module
  * @param[in] uint32_t (module_number- specifies the pwm smodule to be selected)
  *            uint32_t (value - value to be set between 0x0000 to 0xffff.)
  * @param[Out] uint32_t (returns 1 on success, 0 on failure.)

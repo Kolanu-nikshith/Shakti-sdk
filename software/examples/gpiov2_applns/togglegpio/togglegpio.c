@@ -2,8 +2,8 @@
 * Project           		: shakti devt board
 * Name of the file	     	: togglegpio.c
 * Brief Description of file     : Control an led with the help of a button, gpio based.
-* Name of Author    	        : Sathya Narayanan N
-* Email ID                      : sathya281@gmail.com
+* Name of Author    	        : Soutrick Roy Chowdhury
+* Email ID                      : soutrickofficial@gmail.com
 
  Copyright (C) 2019  IIT Madras. All rights reserved.
 
@@ -41,7 +41,7 @@ void main()
 	gpiov2_instance->direction = 0xff0fffff;
 
 #if 0	
-		/* Toggling All the pins using clear  */
+		/* Toggling All the pins using set and clear register  */
 
 	while(1)
 	{
@@ -60,7 +60,7 @@ void main()
 
 	while (1)
 	{
-		gpiov2_instance->toggle = 0xff0fffff;
+		gpiov2_instance->toggle = 0xff0fffff; 			// Toggling all pins together for checking
 		delay_loop(3000, 1000);
 	}
 #endif
