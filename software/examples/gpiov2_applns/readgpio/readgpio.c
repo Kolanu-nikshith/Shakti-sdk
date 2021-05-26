@@ -44,7 +44,6 @@ needed
 
 void main () 
 {
-
 	check_gpiov2();
 	printf("\n Read from GPIO Pins\n");
 	gpiov2_init();

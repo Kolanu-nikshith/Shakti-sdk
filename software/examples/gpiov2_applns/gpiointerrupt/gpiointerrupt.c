@@ -98,7 +98,7 @@ void main()
 	/* Checking for active low */
 	// gpiov2_instance->intr_config = 0xff;
 
-	/* Chexking for active high */
+	/* Checking for active high */
 	// gpiov2_instance->intr_config = 0x00;
 
     plic_init();
