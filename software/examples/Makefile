@@ -449,7 +449,11 @@ else
 ifeq ($(PROGRAM),w25q32_chk)
 filepath := sspi_applns/w25q32_chk
 else
+ifeq ($(PROGRAM),mcp4921dac_chk)
+filepath := sspi_applns/mcp4921dac_chk
+else
 	@echo "Entry for $(PROGRAM) not present"
+endif
 endif
 endif
 endif
