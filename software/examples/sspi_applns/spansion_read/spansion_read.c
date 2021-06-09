@@ -31,41 +31,25 @@ protocol.
 #include <stdint.h>
 #include "sspi.h"
 #include "uart.h"
+#include "flashdata.h"
 
-#define  WRITE_SIZE 10
+
+#define  WRITE_SIZE write_data[0]
 #define  READ_SIZE 10
 #define FLASH_BASE_ADDRESS 0x00b00000
 
-/** @fn static void flash_read_locations(uint32_t read_address, uint16_t length)
- * @brief Reads the flash memory contents starting from read_address.
-          Totally length number of bytes will be read.
- * @param unsigned int (32-bit).
- * @param unsigned int (16-bit).           
- */
-#if 0
-static void flash_read_locations(uint32_t read_address, uint16_t length)
+void jumpToRAM()
 {
-	for(int i = 0; i < length; ++i)
-	{
-		int read_value = flash_read(read_address);
-		printf("\nReading from adddress %x and data \
-			   %x\n",read_address,read_value);
-		read_address = read_address+4;
-	}
+	printf("\n%s\n","Control transferred to RAM");
+	asm volatile("fence.i");
+	asm volatile( "li x30, 0x80000000" "\n\t"
+			"jr x30" "\n\t"
+			:
+			:
+			:"x30","cc","memory"
+		    );
 }
-#else
-static void flash_read_locations(uint32_t read_address, uint32_t length, int *read_data)
-{
-	for(int i = 0; i < length; ++i)
-	{
-		int read_value = flash_read(read_address);
-		printf("\nReading from adddress %x and data \
-			   %x\n",read_address,read_value);
-		*read_data++ = read_value;
-		read_address = read_address+4;
-	}
-}
-#endif
+
 
 /** @fn void main()
  * @brief Configures the SPI flash and writes into a flash location.
@@ -76,8 +60,9 @@ void main()
 {
 	int write_address = FLASH_BASE_ADDRESS;  // read/write from/to this address
 	int read_address  = FLASH_BASE_ADDRESS;  // read/write from/to this address
-	int data = 0xDEADBEEF; //32 bits of data can be written at a time
+	int data = 0xDEADBEEF, count = 0; //32 bits of data can be written at a time
 	uint32_t length = 11;
+	int* bram_address = (int*) 0x80000000;
 
 	sspi_init();
 	flash_init();
@@ -88,30 +73,28 @@ void main()
 	flash_device_id();
 	waitfor(200);
 	printf("\n Flash device id read complete");
-	flash_erase(FLASH_BASE_ADDRESS); //erases an entire sector
-	printf("\nErase complete");
 
-#if 0
-	flash_read_locations(read_address, length);
+#if 1
+	count = flash_read(read_address);
+	printf("\n count value: %x", count);
+	read_address += 4;
+	for(int i = 1; i < count; i++)
+	{
+		data = flash_read(read_address);
+//		printf("\n Addr: %x; wdata: %x; rdata: %x", read_address, write_data[i], data);
+		if(data != write_data[i])
+			{
+				printf("\n Error in read data @ Address: %x", read_address);
+				return 1;
+			}
+				*(bram_address) = data;
+	bram_address++;
+	read_address += 4;
+	}
 
-	//flash write
-	flash_write( write_address, 0x12345678);
-	flash_write( write_address + 0x04, 0xaaaaaaaa);
-	flash_write( write_address + 0x08, 0x55555555);
-	flash_write( write_address + 0x0C, 0xAAAA5555);
-	flash_write( write_address + 0x10, 0x5555AAAA);
-	flash_write( write_address + 0x14, 0xaaa5aaa5);
-	flash_write( write_address + 0x18, 0x555A555A);
-	flash_write( write_address + 0x1c, 0xaa55aa55);
-	flash_write( write_address + 0x20, 0x55aa55aa);
-	flash_write( write_address + 0x24, 0x5a5a5a5a);
-	flash_write( write_address + 0x28, 0xa5a5a5a5);
+	printf("\n\nread complete.\n");
+	jumpToRAM();
 
-	printf("\nFlash write done on address %x and data %x \n", 
-	       write_address, data);
-
-	printf("\n After Write");
-	flash_read_locations(read_address, length);
 #else
 	int write_data[WRITE_SIZE] = {0};
 	int read_data[READ_SIZE] = {0};
@@ -144,6 +127,6 @@ void main()
 		}
 	}
 	log_info("\n Flash Test passed");
-#endif
 	asm volatile ("ebreak");
+#endif
 }

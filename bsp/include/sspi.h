@@ -56,20 +56,16 @@ typedef struct
     uint16_t reserve6;            /*! 16 bits -Reserved */
 }sspi_struct;
 
-#ifdef SSPI_DRIVER 
-/* Mapping SSPI0 Base address to the struct instance of SSPI0 */
-sspi_struct *sspi_instance[SSPI_MAX_COUNT];
-#else
-// /* Mapping SSPI0 Base address to the struct instance of SSPI0 */
-extern sspi_struct *sspi_instance[];
-
-#endif
 
 /* Declaring the buffer variables to be used in ISR */
 #ifdef SSPI_DRIVER
+/* Mapping SSPI0 Base address to the struct instance of SSPI0 */
+sspi_struct *sspi_instance[SSPI_MAX_COUNT];
 uint32_t buf_length =0;
 uint32_t buf_data =0;; 
 #else
+// /* Mapping SSPI0 Base address to the struct instance of SSPI0 */
+extern sspi_struct *sspi_instance[];
 extern uint32_t buf_length;
 extern uint32_t buf_data; 
 #endif

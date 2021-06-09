@@ -66,6 +66,28 @@ static void flash_read_locations(uint32_t read_address, uint32_t length, int *re
 	}
 }
 #endif
+#define SSPI_INSTANCE 0
+void test_spi()
+{
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0;	//MSB byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0xb0;	//2nd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0;	//3rd byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0;	//4th byte of address.
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0x55;	//4th byte of data.
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0xaa;	//4th byte of data.
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0x55;	//4th byte of data.
+	sspi_instance[SSPI_INSTANCE]->data_tx = 0xaa;	//4th byte of data.
+	sspi_configure_tx_rx_length(sspi_instance[SSPI_INSTANCE], 64, 0);//Tx - 72, Rx - 0;
+	sspi_configure_comm_mode(sspi_instance[SSPI_INSTANCE], SIMPLEX_TX);
+	sspi_enable_txrx(sspi_instance[SSPI_INSTANCE], ENABLE);
+#ifdef SHOW_REG
+	sspi_read_registers(sspi_instance[SSPI_INSTANCE]);
+#endif	
+//	sspi_notbusy();
+
+
+
+}
 
 /** @fn void main()
  * @brief Configures the SPI flash and writes into a flash location.
@@ -81,69 +103,9 @@ void main()
 
 	sspi_init();
 	flash_init();
-	printf("SPI init done\n");
-	flash_register_read(0x35);
-	flash_register_read(0x05);
+	while(1)
+//		test_spi();	
+		flash_status_register_read();
 
-	flash_device_id();
-	waitfor(200);
-	printf("\n Flash device id read complete");
-	flash_erase(FLASH_BASE_ADDRESS); //erases an entire sector
-	printf("\nErase complete");
-
-#if 0
-	flash_read_locations(read_address, length);
-
-	//flash write
-	flash_write( write_address, 0x12345678);
-	flash_write( write_address + 0x04, 0xaaaaaaaa);
-	flash_write( write_address + 0x08, 0x55555555);
-	flash_write( write_address + 0x0C, 0xAAAA5555);
-	flash_write( write_address + 0x10, 0x5555AAAA);
-	flash_write( write_address + 0x14, 0xaaa5aaa5);
-	flash_write( write_address + 0x18, 0x555A555A);
-	flash_write( write_address + 0x1c, 0xaa55aa55);
-	flash_write( write_address + 0x20, 0x55aa55aa);
-	flash_write( write_address + 0x24, 0x5a5a5a5a);
-	flash_write( write_address + 0x28, 0xa5a5a5a5);
-
-	printf("\nFlash write done on address %x and data %x \n", 
-	       write_address, data);
-
-	printf("\n After Write");
-	flash_read_locations(read_address, length);
-#else
-	int write_data[WRITE_SIZE] = {0};
-	int read_data[READ_SIZE] = {0};
-	printf("\n Data read after erase:")	;
-	length = READ_SIZE;
-//	for(int i = 0; i < length; i++)
-	{
-		flash_read_locations( read_address, length, &read_data);
-	}
-//	while(1);
-	length = WRITE_SIZE;
-	data = 0x0;
-	for(int i = 0; i < length; i++)
-	{
-		flash_write( write_address, data);
-		write_data[i] = data;
-		data += 0x01010101;
-		write_address += 0x04;
-	}
-	length = READ_SIZE;
-		flash_read_locations( read_address, length, &read_data);
-
-	for(int i = 0; i < length; i++)
-	{
-		if(read_data[i] != write_data[i] )
-		{
-			log_error("\n Flash test failed");
-			log_error("\n write_value: %x; read_value: %x", write_data[i], read_data[i]);
-			return;
-		}
-	}
-	log_info("\n Flash Test passed");
-#endif
 	asm volatile ("ebreak");
 }

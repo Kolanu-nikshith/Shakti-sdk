@@ -440,6 +440,18 @@ else
 ifeq ($(PROGRAM),spansion_chk)
 filepath := sspi_applns/spansion_chk
 else
+ifeq ($(PROGRAM),flash_sr)
+filepath := sspi_applns/flash_sr
+else
+ifeq ($(PROGRAM),boot)
+filepath := sspi_applns/boot
+else
+ifeq ($(PROGRAM),spansion_upd)
+filepath := sspi_applns/spansion_upd
+else
+ifeq ($(PROGRAM),spansion_read)
+filepath := sspi_applns/spansion_read
+else
 ifeq ($(PROGRAM),sspi_master)
 filepath := sspi_applns/sspi_master
 else
@@ -453,6 +465,10 @@ ifeq ($(PROGRAM),mcp4921dac_chk)
 filepath := sspi_applns/mcp4921dac_chk
 else
 	@echo "Entry for $(PROGRAM) not present"
+endif
+endif
+endif
+endif
 endif
 endif
 endif
