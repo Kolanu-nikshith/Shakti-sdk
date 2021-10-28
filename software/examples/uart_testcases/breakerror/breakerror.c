@@ -2,8 +2,8 @@
 * Project           		:  shakti devt board
 * Name of the file	     	:  hello.c
 * Brief Description of file     :  Does the printing of hello with the help of uart communication protocol.
-* Name of Author    	        :  Sathya Narayanan N
-* Email ID                      :  sathya281@gmail.com
+* Name of Author    	                :  Akshaya B
+* Email ID                              :  akshayabarat@gmail.com
 
  Copyright (C) 2019  IIT Madras. All rights reserved.
 
@@ -21,17 +21,22 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ***************************************************************************/
+
 /*
 Procedure:
+Break error is when the input is "stuck-at-0"
+grounding the RX pin UART1
 
-Configure UART1 (cutecom) and UART0 (miniterm) with same baudrate, no of bits to be transmitted and parity.
-Continuously send 0x00(hex not ascii) from cutecom (UART1) to UART0
-Check the status register in code.
 After some time, we will be getting break condition. */
 
 #include<uart.h>
 #include "pinmux.h"
+void set_uart_control(uart_struct *uart_instance, uint16_t uart_control);
 
+void set_uart_control(uart_struct *uart_instance, uint16_t uart_control){
+        uart_instance->control = uart_control;
+}
+#if 0
 void main()
 {
    	*(pinmux_config_reg) =  0x55;
@@ -54,4 +59,21 @@ void main()
 		}
 	}
 
+}
+#endif
+int main() {
+	*(pinmux_config_reg) =  0x55;
+    printf("Hello world\n");
+    while(1)
+    {
+    printf("Status: %x\n",uart_instance[1]->status);
+
+	if( 0 != (uart_instance[1]->status & STS_RX_NOT_EMPTY ) )
+	{
+	write_uart_string (uart_instance[0], "\n The received char: ");
+	write_uart_character(uart_instance[0], uart_instance[1]->rcv_reg);
+	}
+
+    delay_loop(2000,2000);
+	}
 }

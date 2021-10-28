@@ -1,9 +1,9 @@
 /***************************************************************************
 * Project           		:  shakti devt board
-* Name of the file	     	:  hello.c
-* Brief Description of file     :  Does the printing of hello with the help of uart communication protocol.
-* Name of Author    	        :  Sathya Narayanan N
-* Email ID                      :  sathya281@gmail.com
+* Name of the file	     	:  baudrate.c
+* Brief Description of file     :  Sends chars between UART 0 and 1 in different baudrates
+* Name of Author    	                :  Akshaya B
+* Email ID                              :  akshayabarat@gmail.com
 
  Copyright (C) 2019  IIT Madras. All rights reserved.
 
@@ -21,6 +21,11 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ***************************************************************************/
+/* Procedure
+Set up Stop bits -1, No parity for both UARTs
+UART0 Miniterm - change the baud rate as required
+UART1 Miniterm baud rate is set as 19200 
+*/
 
 #include "uart.h"
 #include "pinmux.h"
@@ -33,7 +38,7 @@ void main()
 	set_baud_rate(uart_instance[0], 19200); // Set the required baudrate from 300 to 540,000
 	//set_baud_rate(uart_instance[1], 500000);
   write_uart_string (uart_instance[0], "\nHello World from UART0");
-  write_uart_string (uart_instance[1], "\nHello World from UART1");  
+  write_uart_string (uart_instance[1], "\nHello World from UART1");
   while(1)
     {
         while( 0 == (uart_instance[1]->status & STS_RX_NOT_EMPTY ) );

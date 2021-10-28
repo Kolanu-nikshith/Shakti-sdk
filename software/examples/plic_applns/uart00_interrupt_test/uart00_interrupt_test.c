@@ -1,10 +1,10 @@
 /***************************************************************************
- * Project           			:  shakti devt board
- * Name of the file	     		:  btnled.c
- * Created date			        :  26.02.2019
- * Brief Description of file             :  Controls the led operation with help of button,gpio based.
- * Name of Author    	                :  Sathya Narayanan N & Raghav
- * Email ID                              :  sathya281@gmail.com
+* Project           			:  shakti devt board
+* Name of the file	     		: uart00_interrupt_test
+* Created date			        :  26.02.2019
+* Brief Description of file             :  UART 0 Interrupt test case
+* Name of Author    	                :  Akshaya B
+* Email ID                              :  akshayabarat@gmail.com
 
  Copyright (C) 2019  IIT Madras. All rights reserved.
 

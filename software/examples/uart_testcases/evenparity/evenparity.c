@@ -2,8 +2,8 @@
 * Project           		:  shakti devt board
 * Name of the file	     	:  hello.c
 * Brief Description of file     :  Does the printing of hello with the help of uart communication protocol.
-* Name of Author    	        :  Sathya Narayanan N
-* Email ID                      :  sathya281@gmail.com
+* Name of Author    	                :  Akshaya B
+* Email ID                              :  akshayabarat@gmail.com
 
  Copyright (C) 2019  IIT Madras. All rights reserved.
 
@@ -21,10 +21,11 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ***************************************************************************/
-/*Configure UART1 (cutecom) and UART0 (miniterm) with same baudrate, no of bits & Stop bits to be transmitted and parity.
-Continuously send some char from cutecom (UART1) to UART0
-UART0 is expecting 2 Stop bits where as UART1 is Sending data with 1 stop bit.
-We will get an framing error bit set.*/
+/*
+UART0: 19200, stop bit=1 No parity; (miniterm)
+UART1: 19200, Stop bit1, even parity (miniterm)
+Try sending chars from UART1 to UART0
+*/
 
 
 

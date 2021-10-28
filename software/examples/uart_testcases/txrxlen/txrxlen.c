@@ -2,8 +2,8 @@
 * Project           		:  shakti devt board
 * Name of the file	     	:  hello.c
 * Brief Description of file     :  Does the printing of hello with the help of uart communication protocol.
-* Name of Author    	        :  Sathya Narayanan N
-* Email ID                      :  sathya281@gmail.com
+* Name of Author    	                :  Akshaya B
+* Email ID                              :  akshayabarat@gmail.com
 
  Copyright (C) 2019  IIT Madras. All rights reserved.
 
@@ -27,27 +27,72 @@ UART0 is expecting 2 Stop bits where as UART1 is Sending data with 1 stop bit.
 We will get an framing error bit set.*/
 
 
-#include<uart.h>
-#include "pinmux.h"
+/**
+@file
+@brief
+@detail
+*/
+#include "uart.h"
+#include "traps.h"
+#include "platform.h"
+#include "plic_driver.h"
+#include "log.h"
 
-#define UART_TX_RX_LEN
 
-void main()
-{
-	int value = 0;
-	*(pinmux_config_reg) =  0x55;
-	set_baud_rate(uart_instance[0], 19200);
-	set_baud_rate(uart_instance[1], 19200);
-	value = uart_instance[1]->control;
-	write_uart_string (uart_instance[0],"\n Hello world");
-	write_uart_string (uart_instance[1],"\n Hello world");
-	uart_instance[1]->control = value | UART_TX_RX_LEN(16);
-	write_uart_string (uart_instance[1],"\n Hello world after length");
-	while(1)
-	{
-		while( 0 == (uart_instance[1]->status & STS_RX_NOT_EMPTY ) );
-		write_uart_string (uart_instance[0], "\n The received char: ");
-		write_uart_character(uart_instance[0], uart_instance[1]->rcv_reg);
-	}
+/** @fn
+ * @brief
+ *
+ * @details
+ *
+ *
+ * @warning
+ *
+ * @param[in]
+ * @param[Out]
+ */
+
+
+int main(void) {
+
+	unsigned int int_id = 1;
+	register uint32_t retval;
+	uint16_t value;
+	char readString[30];
+	char a;
+	int i;
+  uint16_t control;
+  uart_init();
+  uart_struct *uart1 = uart_instance[1];
+  set_baud_rate(uart1,19200);
+  value = uart_instance[1]->control;
+  value = 0;
+	printf("UART Char test\n");
+	//printf("\n UART char size set to 0");
+  //control = 0;
+
+  //printf("\n UART char size set to 1");
+  //control = value | 1 << 5;
+
+  //printf("\n UART char size set to 4");
+  //control = value | 4 << 5;
+  //printf("\n UART char size set to 7");
+  //control = value | 7 << 5;
+  //printf("\n UART char size set to 15");
+  //control = value | 15 << 5;
+  //printf("\n UART char size set to 22");
+  //control = value | 22 << 5;
+  //printf("\n UART char size set to 32");
+  //control = value | 32 << 5;
+
+  printf("\n UART char size set to 22");
+  control = value | 8 << 5;
+  set_uart_control(uart1,control);
+  printf("\n UART control is set to %d",control);
+  write_uart_string(uart1,"Hello World abc");
+  //read_uart_string(uart1,readString);
+  //printf("\n read from uart1 %s",readString);
+  //write_uart_character(uart1,"W");
+  //read_uart_character(uart1,&a);
+  //printf("\n read from uart1 %c",a);
+
 }
-
