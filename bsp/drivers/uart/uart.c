@@ -33,9 +33,10 @@
 
 volatile uart_struct *uart_instance[MAX_UART_COUNT];
 
-#define RTS GPIO4
-#define USE_INTERRUPT
-
+#define RTS GPIO4 
+#define USE_INTERRUPT 1
+//#define MINITERM 1 //Uncomment this line when UART loopback is not used and 
+//miniterm is used connected to uart
 unsigned char uart0_complete = 0;
 unsigned char uart1_complete = 0;
 unsigned char uart2_complete = 0;
@@ -276,7 +277,9 @@ unsigned char uart0_isr()
 		{
 			read_value = uart_instance[0]->rcv_reg;
 			u0_rcv_char[uart0_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 			write_uart_character(uart_instance[0], read_value);
+#endif		
 		}
 	}
 	else if(uart_instance[0]->status & STS_RX_FULL)
@@ -288,7 +291,9 @@ unsigned char uart0_isr()
 		{
 			read_value = uart_instance[0]->rcv_reg;
 			u0_rcv_char[uart0_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 			write_uart_character(uart_instance[0], read_value);
+#endif		
 		}
 		write_word(GPIO_DATA_REG, read_word(GPIO_DATA_REG) & ~(RTS));
 	}
@@ -296,7 +301,9 @@ unsigned char uart0_isr()
 	{
 		read_value = uart_instance[0]->rcv_reg;
 		u0_rcv_char[uart0_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 		write_uart_character(uart_instance[0], read_value);
+#endif		
 	}
 	return 0;
 }
@@ -319,7 +326,9 @@ unsigned char uart1_isr()
 		{
 			read_value = uart_instance[1]->rcv_reg;
 			u1_rcv_char[uart1_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 			write_uart_character(uart_instance[1], read_value);
+#endif		
 		}
 	}
 	else if(uart_instance[1]->status & STS_RX_FULL)
@@ -331,7 +340,9 @@ unsigned char uart1_isr()
 		{
 			read_value = uart_instance[1]->rcv_reg;
 			u1_rcv_char[uart1_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 			write_uart_character(uart_instance[1], read_value);
+#endif		
 		}
 		write_word(GPIO_DATA_REG, read_word(GPIO_DATA_REG) & ~(RTS));
 	}
@@ -339,7 +350,10 @@ unsigned char uart1_isr()
 	{
 		read_value = uart_instance[1]->rcv_reg;
 		u1_rcv_char[uart1_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 		write_uart_character(uart_instance[1], read_value);
+#endif		
+//		printf("\n:%c", read_value);
 	}
 	return 0;
 }
@@ -362,7 +376,9 @@ unsigned char uart2_isr()
 		{
 			read_value = uart_instance[2]->rcv_reg;
 			u2_rcv_char[uart2_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 			write_uart_character(uart_instance[2], read_value);
+#endif		
 		}
 	}
 	else if(uart_instance[2]->status & STS_RX_FULL)
@@ -374,7 +390,9 @@ unsigned char uart2_isr()
 		{
 			read_value = uart_instance[2]->rcv_reg;
 			u2_rcv_char[uart2_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 			write_uart_character(uart_instance[2], read_value);
+#endif		
 		}
 		write_word(GPIO_DATA_REG, read_word(GPIO_DATA_REG) & ~(RTS));
 	}
@@ -382,7 +400,10 @@ unsigned char uart2_isr()
 	{
 		read_value = uart_instance[2]->rcv_reg;
 		u2_rcv_char[uart2_rcv_isr_count++] = read_value;
+#ifdef MINITERM
 		write_uart_character(uart_instance[2], read_value);
+#endif		
+//		printf("\n:%c", read_value);
 	}
 	return 0;
 }

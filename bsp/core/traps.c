@@ -113,7 +113,7 @@ uintptr_t handle_trap(uintptr_t mcause, uintptr_t epc)
 	if (code){
 		ie_entry = (~code) & mcause;
 
-		log_info("\nInterrupt: mcause = %x, epc = %x\n", mcause, epc);
+		log_debug("\nInterrupt: mcause = %x, epc = %x\n", mcause, epc);
 
 		mcause_interrupt_table[ie_entry](mcause, epc);
 	}

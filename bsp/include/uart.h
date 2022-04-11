@@ -80,7 +80,7 @@ typedef struct
 #define ENABLE_RX_NOT_EMPTY 	1 << 2
 #define ENABLE_TX_FULL 		1 << 1
 #define ENABLE_TX_EMPTY 	1 << 0
-#define UARTX_BUFFER_SIZE       10000
+#define UARTX_BUFFER_SIZE       100
 
 /* UART control register */
 #define STOP_BITS(x) ( (x & 3) << 1) /*! 00 - 1 stop bits, 01 - 1.5 stop bits; 10 - 2 stop bits; 11 unused */

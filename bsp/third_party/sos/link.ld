@@ -27,8 +27,11 @@ ENTRY(_start)
 SECTIONS
 {
   . = 0x80000000;
+    . = ALIGN(4);
   .text.init : { *(.text.init) }
+    . = ALIGN(4);
   .text : { *(.text) }
+    . = ALIGN(4);
   .rodata : {
        __rodata_start = .;
        *(.rodata)
@@ -37,6 +40,7 @@ SECTIONS
        __rodata_end = .;
  }
   .sdata : {
+    . = ALIGN(4);
     __global_pointer$ = . + 0x800;
     *(.srodata.cst16) *(.srodata.cst8) *(.srodata.cst4) *(.srodata.cst2) *(.srodata*)
     *(.sdata .sdata.* .gnu.linkonce.s.*)
