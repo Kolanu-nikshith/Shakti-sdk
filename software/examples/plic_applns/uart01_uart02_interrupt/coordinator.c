@@ -523,7 +523,8 @@ void checkReceivedData(char *recv){
       default:
          break;
       }
-   printf("%s\n", recv);
+      char *p = &recv+1;
+   //printf("%s\n",p);
 }
 
 void sendDatatoNode(char recv){

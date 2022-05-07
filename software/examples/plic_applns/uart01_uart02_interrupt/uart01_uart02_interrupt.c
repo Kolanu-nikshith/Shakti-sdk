@@ -389,7 +389,7 @@ int SendDataPOST(uart_struct * uart_instance, char *api, char *data , char *time
         {
             if(read_output(uart_instance,"+HTTPACTION"))
             {
-                log_info("\nDate Sended");
+                log_info("\nDate Sent to remote server");
                 flag=1;
             }
             else
@@ -406,12 +406,12 @@ int SendDataPOST(uart_struct * uart_instance, char *api, char *data , char *time
     write_cmd(uart_instance,"AT+HTTPREAD=0,500");
     if(read_output(uart_instance,"success"))
     {
-        log_info("\nSuccessfully sent to remote server\n\n");
+        log_info("\nReceived response from remote server\n\n");
         return 1;
     }
     else
     {
-        log_info("\nfailed sending to remote server");
+        log_info("\nfailed to get response from remote server");
         return 0;
     }
     
@@ -469,13 +469,13 @@ int SendDataRF(uart_struct * uart_instance, int enddevice, char *rfdata){
     data[checksumoffest] = checksum;
 
    if(enddevice == MQ2){
-          printf("sending rf data to MQ2 node\n");
+          printf("sending remote server response to MQ2 node\n");
    }
    else if(enddevice ==  MQ7){
-          printf("sending rf data to MQ7 node\n");
+          printf("sending remote server response to MQ7 node\n");
    }
    else if(enddevice ==  LM75){
-          printf("sending rf data to LM75 node\n");
+          printf("sending remote server response to LM75 node\n");
    }
 
     // for(int i=start;i<rfdatabase+strlen(rfdata)+1;i++){
@@ -509,21 +509,21 @@ void checkReceivedData(char *recv){
    switch (ch)
       {
       case MQ2: 
-         printf("\nreceived data from MQ2 node:");
+         printf("\nreceived data from MQ2 node:\n\t\"");
          break;
       
       case MQ7:
-         printf("\nreceived data from MQ7 node:");
+         printf("\nreceived data from MQ7 node:\n\t\"");
          break;
 
       case LM75:
-         printf("\nreceived data from LM75 node:");
+         printf("\nreceived data from LM75 node:\n\t\"");
          break;
 
       default:
          break;
       }
-   printf("%s\n", recv);
+   printf("%s\"\n", recv+1);
 }
 
 void sendDatatoNode(char recv){
