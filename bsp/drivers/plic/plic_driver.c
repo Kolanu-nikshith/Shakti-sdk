@@ -50,7 +50,7 @@ interrupt_data_t hart0_interrupt_matrix[PLIC_MAX_INTERRUPT_SRC];
 inline static void interrupt_complete(uint32_t interrupt_id)
 {
 	log_trace("\ninterrupt_complete entered\n");
-
+	//printf("\n interrupt id: %x", interrupt_id);
 	uint32_t *claim_addr =  (uint32_t *) (PLIC_BASE_ADDRESS +
 					      PLIC_CLAIM_OFFSET);
 

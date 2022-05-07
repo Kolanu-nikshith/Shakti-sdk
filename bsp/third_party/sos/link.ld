@@ -46,6 +46,7 @@ SECTIONS
     *(.sdata .sdata.* .gnu.linkonce.s.*)
   }
   .sbss : {
+    . = ALIGN(4);
     __sbss_start = .;
     *(.sbss)
     *(.sbss.*)
