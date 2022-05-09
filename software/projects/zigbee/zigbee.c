@@ -42,7 +42,7 @@
 #define USE_INTERRUPT
 #define MAX_OUTPUT_SIZE 1024
 #define APIGET "https://api.thingspeak.com/update?api_key=QCEEO07H8BHDRZ2N&field1="
-#define APIPOST "http://13.235.86.66/admin/data/1" 
+#define APIPOST "http://3.110.166.246/admin/data/1" 
 //#define DATA "LPG:4,CO:40,SMOKE:20,ID:balcony"
 #define TIME "1000"
 
@@ -61,13 +61,6 @@ unsigned int uart2_prev_rcv_isr_count_flag = 0;
 unsigned int uart0_prev_tx_isr_count_flag = 0;
 unsigned int uart1_prev_tx_isr_count_flag = 0;
 unsigned int uart2_prev_tx_isr_count_flag = 0;
-#if 1
-	uint8_t uart1_buf[] = {"abcdefghijklmnopqrstuvwxyz"};
-	uint8_t uart2_buf[] = {"ABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-#else
-	uint8_t uart1_buf[] = {"abcdef"};
-	uint8_t uart2_buf[] = {"ABCDEF"};
-#endif
 
 
 void init_variables()
@@ -491,20 +484,6 @@ int SendDataRF(uart_struct * uart_instance, int enddevice, char *rfdata){
 //    write_uart_string(uart_instance, data);   
 
 }
-
-
-#ifdef COORDINATOR
-
-#endif
-
-#ifdef ROUTER
-
-#endif
-
-#ifdef END_DEVICE
-
-#endif
-
 
 int calchecksum(char *data){
     //checksum calculation

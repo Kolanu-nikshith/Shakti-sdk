@@ -164,6 +164,9 @@ else
 ifeq ($(PROGRAM),flash_gpio)
 filepath := ./flash_gpio
 else
+ifeq ($(PROGRAM),zigbee)
+filepath := ./zigbee
+else
 ifeq ($(PROGRAM),uart-cam)
 filepath := ./uart-cam/ucam
 else

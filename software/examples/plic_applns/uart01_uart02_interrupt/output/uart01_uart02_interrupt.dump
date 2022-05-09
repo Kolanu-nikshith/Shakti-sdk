@@ -7527,17 +7527,18 @@ Disassembly of section .rodata:
     80005590:	7468                	ld	a0,232(s0)
     80005592:	7074                	ld	a3,224(s0)
     80005594:	2f3a                	fld	ft10,392(sp)
-    80005596:	312e332f          	0x312e332f
-    8000559a:	3031                	0x3031
-    8000559c:	312e                	fld	ft2,232(sp)
-    8000559e:	3636                	fld	fa2,360(sp)
-    800055a0:	322e                	fld	ft4,232(sp)
-    800055a2:	3634                	fld	fa3,104(a2)
-    800055a4:	6d64612f          	0x6d64612f
-    800055a8:	6e69                	lui	t3,0x1a
-    800055aa:	7461642f          	0x7461642f
-    800055ae:	2f61                	addiw	t5,t5,24
-    800055b0:	0031                	c.nop	12
+    80005596:	2e33312f          	0x2e33312f
+    8000559a:	3332                	fld	ft6,296(sp)
+    8000559c:	2e35                	addiw	t3,t3,13
+    8000559e:	3638                	fld	fa4,104(a2)
+    800055a0:	362e                	fld	fa2,232(sp)
+    800055a2:	2f36                	fld	ft10,328(sp)
+    800055a4:	6461                	lui	s0,0x18
+    800055a6:	696d                	lui	s2,0x1b
+    800055a8:	2f6e                	fld	ft10,216(sp)
+    800055aa:	6164                	ld	s1,192(a0)
+    800055ac:	6174                	ld	a3,192(a0)
+    800055ae:	0000312f          	amoadd.d	sp,zero,(zero)
     800055b2:	0000                	unimp
     800055b4:	0000                	unimp
     800055b6:	0000                	unimp
@@ -10031,7 +10032,7 @@ Disassembly of section .debug_info:
      89e:	0b10                	addi	a2,sp,400
      8a0:	0005                	c.nop	1
      8a2:	0100                	addi	s0,sp,128
-     8a4:	00b90123          	sb	a1,2(s2) # 19002 <_tbss_end+0x19002>
+     8a4:	00b90123          	sb	a1,2(s2) # 1b002 <_tbss_end+0x1b002>
      8a8:	0000                	unimp
      8aa:	3986                	fld	fs3,96(sp)
      8ac:	8000                	0x8000
